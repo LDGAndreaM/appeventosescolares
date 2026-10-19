@@ -199,7 +199,7 @@ export default function EventForm({ s, set, disabled }: { s: EventFormState; set
         </Field>
         <div style={{ marginTop: 'auto', border: '1.5px solid var(--color-neutral-300)', borderRadius: 12, overflow: 'hidden' }}>
           <div style={{ background: 'var(--ev)', color: '#fff', padding: 14, display: 'flex', gap: 10, alignItems: 'center' }}>
-            <MonoBox logo={s.logoUrl} text={s.acronym || initials(s.name) || 'AD'} size={32} fontSize={11} outline={!s.logoUrl} />
+            <MonoBox logo={s.logoUrl} text={s.acronym || initials(s.name) || 'AD'} size={40} fontSize={12} outline={!s.logoUrl} />
             <span style={{ fontWeight: 700, fontSize: 14 }}>Vista previa</span>
           </div>
           <div style={{ padding: '12px 14px', display: 'flex', gap: 8, background: '#fff' }}>

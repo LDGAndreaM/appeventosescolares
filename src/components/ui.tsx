@@ -127,10 +127,10 @@ export function ErrorState({ error }: { error: unknown }) {
 export function MonoBox(props: { logo?: string | null; text: string; size: number; fontSize?: number; outline?: boolean; radius?: number }) {
   return (
     <div
-      className={'mono-box' + (props.outline ? ' outline' : '')}
-      style={{ width: props.size, height: props.size, fontSize: props.fontSize ?? 15, borderRadius: props.radius ?? 12, padding: props.logo ? 0 : undefined }}
+      className={'mono-box' + (props.logo ? ' has-logo' : props.outline ? ' outline' : '')}
+      style={{ width: props.size, height: props.size, fontSize: props.fontSize ?? 15, borderRadius: props.radius ?? 12, padding: props.logo ? Math.max(2, Math.round(props.size * 0.08)) : undefined }}
     >
-      {props.logo ? <img src={props.logo} alt="" style={{ margin: 0, width: '100%', height: '100%' }} /> : props.text}
+      {props.logo ? <img src={props.logo} alt="" /> : props.text}
     </div>
   );
 }
