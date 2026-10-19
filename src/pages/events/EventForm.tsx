@@ -5,6 +5,7 @@ import { PALETTES } from '../../lib/theme';
 import { dayShort, eachDay, hm, initials, slugify } from '../../lib/format';
 import type { EventDay, EventRow, EventStatus } from '../../lib/types';
 import { Field, MonoBox, Segmented } from '../../components/ui';
+import { useImageCropper } from '../../components/ImageCropper';
 
 export interface EventFormState {
   name: string;
@@ -115,6 +116,7 @@ export async function saveEvent(
 export default function EventForm({ s, set, disabled }: { s: EventFormState; set: (p: Partial<EventFormState>) => void; disabled?: boolean }) {
   const fileRef = useRef<HTMLInputElement>(null);
   const [drag, setDrag] = useState(false);
+  const cropper = useImageCropper();
 
   const setRange = (start: string, end: string) => {
     const valid = start && end && end >= start;
@@ -123,10 +125,11 @@ export default function EventForm({ s, set, disabled }: { s: EventFormState; set
       : s.days;
     set({ start, end, days });
   };
-  const pickFile = (f: File | undefined) => {
-    if (!f) return;
-    if (!/^image\//.test(f.type)) return;
-    set({ logoFile: f, logoUrl: URL.createObjectURL(f) });
+  const pickFile = async (f: File | undefined) => {
+    if (fileRef.current) fileRef.current.value = '';
+    if (!f || !/^image\//.test(f.type)) return;
+    const out = await cropper.crop(f, { title: 'Recortar logo del evento' });
+    if (out) set({ logoFile: out, logoUrl: URL.createObjectURL(out) });
   };
   const isCustom = !PALETTES.some(([, a]) => a.toLowerCase() === s.color.toLowerCase());
 
@@ -259,6 +262,7 @@ export default function EventForm({ s, set, disabled }: { s: EventFormState; set
           </Field>
         )}
       </section>
+      {cropper.element}
     </fieldset>
   );
 }

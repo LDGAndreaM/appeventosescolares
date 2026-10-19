@@ -16,6 +16,7 @@
     "qrcode-generator": "^2.0.4",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
+    "react-image-crop": "^11.1.2",
     "react-router-dom": "^7.18.4",
     "write-excel-file": "^4.1.1"
   },

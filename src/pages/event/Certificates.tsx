@@ -12,6 +12,7 @@ import { certificateUrl } from '../../lib/qr';
 import { attendanceRows } from '../../lib/datasets';
 import { ROLES, type Activity, type Certificate, type CertificateSettings, type Person, type Signer } from '../../lib/types';
 import { Field, Loading, SettingRow, Toggle, useToast } from '../../components/ui';
+import { useImageCropper, type CropOptions } from '../../components/ImageCropper';
 import './event.css';
 
 const FIELDS = ['{nombre}', '{actividad}', '{tipo}', '{fecha}', '{duración}', '{evento}', '{ponente}', '{fechas}'];
@@ -47,6 +48,7 @@ export default function Certificates() {
   const [idx, setIdx] = useState(0);
   const [busy, setBusy] = useState<string | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const cropper = useImageCropper();
   const bodyRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -199,7 +201,9 @@ export default function Certificates() {
     }
   };
 
-  const uploadDesign = async (file: File | undefined, apply: (url: string) => void) => {
+  const uploadDesign = async (picked: File | undefined, apply: (url: string) => void, opts: CropOptions) => {
+    if (!picked) return;
+    const file = await cropper.crop(picked, opts);
     if (!file) return;
     try {
       apply(await uploadEventAsset(event.id, `constancias/${crypto.randomUUID()}.${file.name.split('.').pop() || 'png'}`, file));
@@ -208,7 +212,9 @@ export default function Certificates() {
     }
   };
 
-  const uploadSignature = async (i: number, file: File | undefined) => {
+  const uploadSignature = async (i: number, picked: File | undefined) => {
+    if (!picked) return;
+    const file = await cropper.crop(picked, { title: 'Recortar firma' });
     if (!file) return;
     try {
       const url = await uploadEventAsset(event.id, `firmas/${crypto.randomUUID()}.${file.name.split('.').pop() || 'png'}`, file);
@@ -281,7 +287,7 @@ export default function Certificates() {
                   <span className="row" style={{ gap: 10 }}>
                     <label className="link" style={{ fontSize: 12 }}>
                       {settings.background_url ? 'Cambiar' : 'Subir fondo'}
-                      <input type="file" accept="image/png,image/jpeg,image/webp" hidden onChange={(e) => uploadDesign(e.target.files?.[0], (url) => setS({ background_url: url }))} />
+                      <input type="file" accept="image/png,image/jpeg,image/webp" hidden onChange={(e) => { void uploadDesign(e.target.files?.[0], (url) => setS({ background_url: url }), { title: 'Recortar fondo', aspect: 'carta' }); e.target.value = ''; }} />
                     </label>
                     {settings.background_url && <button type="button" className="link danger" style={{ fontSize: 12 }} onClick={() => setS({ background_url: null })}>Quitar</button>}
                   </span>
@@ -301,7 +307,7 @@ export default function Certificates() {
                 {full && settings.extra_logos.length < 2 && (
                   <label className="btn btn-secondary btn-sm" style={{ alignSelf: 'flex-start' }}>
                     + Agregar logo
-                    <input type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp" hidden onChange={(e) => uploadDesign(e.target.files?.[0], (url) => setS({ extra_logos: [...settings.extra_logos, url].slice(0, 2) }))} />
+                    <input type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp" hidden onChange={(e) => { void uploadDesign(e.target.files?.[0], (url) => setS({ extra_logos: [...settings.extra_logos, url].slice(0, 2) }), { title: 'Recortar logo' }); e.target.value = ''; }} />
                   </label>
                 )}
               </div>
@@ -316,7 +322,7 @@ export default function Certificates() {
                   <div className="row" style={{ justifyContent: 'space-between', fontSize: 12 }}>
                     <label className="link" style={{ fontSize: 12 }}>
                       {s.signature_url ? 'Cambiar firma.png' : 'Subir firma (PNG)'}
-                      <input type="file" accept="image/png,image/jpeg" hidden onChange={(e) => uploadSignature(i, e.target.files?.[0])} />
+                      <input type="file" accept="image/png,image/jpeg" hidden onChange={(e) => { void uploadSignature(i, e.target.files?.[0]); e.target.value = ''; }} />
                     </label>
                     <button type="button" className="link danger" style={{ fontSize: 12 }} onClick={() => setS({ signers: settings.signers.filter((_, j) => j !== i) })}>Quitar</button>
                   </div>
@@ -393,6 +399,7 @@ export default function Certificates() {
           })}
         </div>
       </div>
+      {cropper.element}
     </>
   );
 }

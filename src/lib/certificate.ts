@@ -208,10 +208,8 @@ export async function drawCertificate(canvas: HTMLCanvasElement, d: CertificateD
   // Encabezado: logo del evento completo (sin deformar) y, a la derecha, hasta 2 logos más
   const L = 48, R = BW - 48;
   const LOGO_H = 52;
-  let textX = L + 64;
   if (logo) {
-    const w = fitContain(ctx, logo, L, 40, 150, LOGO_H, 'left');
-    textX = L + w + 12;
+    fitContain(ctx, logo, L, 40, 240, LOGO_H, 'left');
   } else {
     ctx.fillStyle = d.color;
     roundRect(ctx, L, 40, 52, 52, 14);
@@ -225,19 +223,13 @@ export async function drawCertificate(canvas: HTMLCanvasElement, d: CertificateD
     const w = fitContain(ctx, img, right - 130, 40, 130, LOGO_H, 'right');
     right -= w + 14;
   }
-  const textMax = right - textX - 8;
-  ctx.fillStyle = INK;
-  ctx.font = F(700, 14);
-  ctx.fillText(d.eventName, textX, 40 + 22, textMax);
-  ctx.fillStyle = MUTED;
-  ctx.font = F(400, 12);
-  ctx.fillText(d.organizer, textX, 40 + 40, textMax);
+  // el nombre del evento y quien organiza ya aparecen en el cuerpo: el encabezado lleva solo logos
   if (d.folio) {
     ctx.textAlign = 'right';
     ctx.font = '600 11px ui-monospace, Menlo, monospace';
     ctx.fillStyle = '#737989';
-    // con logos adicionales el folio baja al pie para no encimarse
-    ctx.fillText(`Folio ${d.folio}`, R, extraImgs.length ? BH - 18 : 40 + 12);
+    // con logos adicionales el folio va debajo de ellos
+    ctx.fillText(`Folio ${d.folio}`, R, extraImgs.length ? 40 + LOGO_H + 16 : 40 + 12);
     ctx.textAlign = 'left';
   }
 
