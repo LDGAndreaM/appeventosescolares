@@ -122,6 +122,51 @@ function wrapRich(ctx: CanvasRenderingContext2D, body: string, size: number, wid
   return lines;
 }
 
+/** Alto extra (sobre la línea) que pueden ocupar las firmas. */
+const SIG_EXTRA = 22;
+
+const trimCache = new WeakMap<HTMLImageElement, HTMLCanvasElement | HTMLImageElement>();
+/** Recorta los márgenes vacíos (transparentes o blancos) de una firma para que llene su espacio. */
+function trimmed(img: HTMLImageElement): HTMLCanvasElement | HTMLImageElement {
+  const hit = trimCache.get(img);
+  if (hit) return hit;
+  let out: HTMLCanvasElement | HTMLImageElement = img;
+  try {
+    const c = document.createElement('canvas');
+    c.width = img.naturalWidth;
+    c.height = img.naturalHeight;
+    const x = c.getContext('2d', { willReadFrequently: true })!;
+    x.drawImage(img, 0, 0);
+    const { data, width, height } = x.getImageData(0, 0, c.width, c.height);
+    let x0 = width, y0 = height, x1 = -1, y1 = -1;
+    for (let y = 0; y < height; y++)
+      for (let xx = 0; xx < width; xx++) {
+        const i = (y * width + xx) * 4;
+        const ink = data[i + 3] > 24 && (data[i] < 235 || data[i + 1] < 235 || data[i + 2] < 235);
+        if (ink) {
+          if (xx < x0) x0 = xx;
+          if (xx > x1) x1 = xx;
+          if (y < y0) y0 = y;
+          if (y > y1) y1 = y;
+        }
+      }
+    if (x1 >= x0 && y1 >= y0) {
+      const pad = 2;
+      x0 = Math.max(0, x0 - pad); y0 = Math.max(0, y0 - pad);
+      x1 = Math.min(width - 1, x1 + pad); y1 = Math.min(height - 1, y1 + pad);
+      const t = document.createElement('canvas');
+      t.width = x1 - x0 + 1;
+      t.height = y1 - y0 + 1;
+      t.getContext('2d')!.drawImage(c, x0, y0, t.width, t.height, 0, 0, t.width, t.height);
+      out = t;
+    }
+  } catch {
+    // imagen sin permiso de lectura (CORS): se usa tal cual
+  }
+  trimCache.set(img, out);
+  return out;
+}
+
 /** Dibuja una imagen completa dentro de un recuadro, sin deformarla. Devuelve el ancho usado. */
 function fitContain(ctx: CanvasRenderingContext2D, img: HTMLImageElement, x: number, y: number, maxW: number, maxH: number, align: 'left' | 'right') {
   const k = Math.min(maxW / img.width, maxH / img.height);
@@ -143,7 +188,7 @@ export async function drawCertificate(canvas: HTMLCanvasElement, d: CertificateD
     loadImage(d.logoUrl), loadImage(d.background), ...extras.map(loadImage), ...d.signers.map((s) => loadImage(s.signature_url)),
   ]);
   const extraImgs = rest.slice(0, extras.length).filter((x): x is HTMLImageElement => !!x);
-  const sigs = rest.slice(extras.length);
+  const sigs = rest.slice(extras.length).map((img) => (img ? trimmed(img) : null));
   canvas.width = BW * scale;
   canvas.height = BH * scale;
   const ctx = canvas.getContext('2d')!;
@@ -211,7 +256,8 @@ export async function drawCertificate(canvas: HTMLCanvasElement, d: CertificateD
   const listSize = list.length > 6 ? 11 : 12.5;
   const listH = list.length ? 8 + list.length * listSize * 1.5 : 0;
   const blockH = 13 + 10 + 14 + 10 + nameSize * 1.05 + 14 + lines.length * lineH + listH;
-  const top = 92, bottom = BH - 40 - 64;
+  // si hay firmas con imagen, el cuerpo deja libre el espacio que ocupan sobre la línea
+  const top = 92, bottom = BH - 40 - 64 - (sigs.some(Boolean) ? SIG_EXTRA : 0);
   let y = top + Math.max(12, (bottom - top - blockH) / 2);
 
   ctx.fillStyle = d.color;
@@ -255,8 +301,12 @@ export async function drawCertificate(canvas: HTMLCanvasElement, d: CertificateD
     const x = L + i * 220;
     const img = sigs[i];
     if (img) {
-      const h = 34, w = Math.min(180, (img.width / img.height) * h);
-      ctx.drawImage(img, x, sigTop, w, h);
+      // firma centrada sobre la línea, del mismo ancho que el bloque del responsable;
+      // baja un poco sobre la línea, como una firma real
+      const boxW = 180, boxH = 36 + SIG_EXTRA;
+      const k = Math.min(boxW / img.width, boxH / img.height);
+      const w = img.width * k, h = img.height * k;
+      ctx.drawImage(img, x + (boxW - w) / 2, sigTop + 36 + 6 - h, w, h);
     }
     ctx.strokeStyle = INK;
     ctx.lineWidth = 1.5;
