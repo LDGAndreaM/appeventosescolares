@@ -159,6 +159,7 @@ export interface CertificateSettings {
   event_id: string;
   body_activity: string;
   body_general: string;
+  body_role: string;
   signers: Signer[];
   show_verification: boolean;
 }
@@ -168,6 +169,8 @@ export interface Certificate {
   event_id: string;
   person_id: string;
   activity_id: string | null;
+  /** attendance = por asistencia (actividad o general); role = participación por su rol */
+  kind: 'attendance' | 'role';
   folio: string;
   status: 'ready' | 'sent';
   sent_at: string | null;

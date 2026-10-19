@@ -16,6 +16,8 @@ export interface CertificateData {
   personName: string;
   /** Texto con segmentos **en negritas**. */
   body: string;
+  /** Encabezado; por defecto «Constancia de asistencia». */
+  title?: string;
   list?: string[];
   signers: Signer[];
   showVerification: boolean;
@@ -33,12 +35,12 @@ interface ActivityLike {
 }
 
 /**
- * Sustituye los campos {nombre}, {actividad}, {tipo}, {fecha}, {duración}, {evento}, {ponente}, {fechas}
+ * Sustituye los campos {nombre}, {actividad}, {tipo}, {fecha}, {duración}, {evento}, {ponente}, {fechas}, {rol}
  * y ajusta artículos/concordancia en español ("al taller" / "a la conferencia").
  */
 export function renderTemplate(
   template: string,
-  v: { person: string; activity?: ActivityLike | null; eventName: string; start: string; end: string },
+  v: { person: string; activity?: ActivityLike | null; eventName: string; start: string; end: string; role?: string },
 ) {
   let t = template;
   const a = v.activity;
@@ -60,6 +62,7 @@ export function renderTemplate(
     evento: `**${v.eventName}**`,
     ponente: a?.speaker ?? '',
     fechas: `**${rangeLong(v.start, v.end)}**`,
+    rol: v.role ? `**${v.role.toLowerCase()}**` : '',
   };
   return t.replace(/\{([a-záéíóúñ]+)\}/gi, (m, k: string) => map[k.toLowerCase()] ?? m);
 }
@@ -185,7 +188,7 @@ export async function drawCertificate(canvas: HTMLCanvasElement, d: CertificateD
   ctx.fillStyle = d.color;
   ctx.font = F(700, 13);
   ctx.letterSpacing = '1.8px';
-  ctx.fillText('CONSTANCIA DE ASISTENCIA', L, (y += 13));
+  ctx.fillText((d.title ?? 'Constancia de asistencia').toUpperCase(), L, (y += 13));
   ctx.letterSpacing = '0px';
   ctx.fillStyle = MUTED;
   ctx.font = F(400, 14);
@@ -272,4 +275,13 @@ export function downloadBlob(blob: Blob, fileName: string) {
   a.download = fileName;
   a.click();
   setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+}
+
+const norm = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
+
+/** Actividades que impartió una persona (su nombre aparece en el ponente/tallerista capturado en Programa). */
+export function activitiesGivenBy<T extends ActivityLike>(name: string, activities: T[]): T[] {
+  const n = norm(name);
+  if (!n) return [];
+  return activities.filter((a) => a.speaker && norm(a.speaker).includes(n));
 }

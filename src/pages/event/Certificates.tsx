@@ -7,14 +7,19 @@ import {
 import { supabase } from '../../lib/supabase';
 import { friendlyError } from '../../lib/messages';
 import { dayShort, durationLabel, longDate, shortDate, todayISO } from '../../lib/format';
-import { activityLine, certificatesPdf, downloadBlob, drawCertificate, renderTemplate, type CertificateData } from '../../lib/certificate';
+import { activitiesGivenBy, activityLine, certificatesPdf, downloadBlob, drawCertificate, renderTemplate, type CertificateData } from '../../lib/certificate';
 import { certificateUrl } from '../../lib/qr';
 import { attendanceRows } from '../../lib/datasets';
-import type { Activity, Certificate, CertificateSettings, Person, Signer } from '../../lib/types';
+import { ROLES, type Activity, type Certificate, type CertificateSettings, type Person, type Signer } from '../../lib/types';
 import { Field, Loading, SettingRow, Toggle, useToast } from '../../components/ui';
 import './event.css';
 
 const FIELDS = ['{nombre}', '{actividad}', '{tipo}', '{fecha}', '{duración}', '{evento}', '{ponente}', '{fechas}'];
+const ROLE_FIELDS = ['{nombre}', '{rol}', '{evento}', '{fechas}'];
+const DEFAULT_ROLE_BODY = 'Por su valiosa participación como {rol} en {evento}, celebrado del {fechas}.';
+/** Filtro de la constancia por rol: todo el equipo (sin participantes) o un rol específico. */
+const TEAM = 'equipo';
+type Kind = 'activity' | 'general' | 'role';
 
 interface Recipient {
   person: Person;
@@ -33,7 +38,8 @@ export default function Certificates() {
   const certs = useCertificates(event.id);
   const settingsQ = useCertSettings(event.id);
 
-  const [kind, setKind] = useState<'activity' | 'general'>('activity');
+  const [kind, setKind] = useState<Kind>('activity');
+  const [roleFilter, setRoleFilter] = useState<string>(TEAM);
   const [activityId, setActivityId] = useState<string>('');
   const [settings, setSettings] = useState<CertificateSettings | null>(null);
   const [dirty, setDirty] = useState(false);
@@ -44,9 +50,9 @@ export default function Certificates() {
   const bodyRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    if (settingsQ.data && !settings) setSettings(settingsQ.data);
+    if (settingsQ.data && !settings) setSettings({ ...settingsQ.data, body_role: settingsQ.data.body_role ?? DEFAULT_ROLE_BODY });
     if (settingsQ.isSuccess && !settingsQ.data && !settings)
-      setSettings({ event_id: event.id, body_activity: '', body_general: '', signers: [], show_verification: true });
+      setSettings({ event_id: event.id, body_activity: '', body_general: '', body_role: DEFAULT_ROLE_BODY, signers: [], show_verification: true });
   }, [settingsQ.data, settingsQ.isSuccess, settings, event.id]);
 
   const acts = useMemo(() => activities.data ?? [], [activities.data]);
@@ -56,11 +62,18 @@ export default function Certificates() {
 
   const recipients: Recipient[] = useMemo(() => {
     if (!people.data || !enrollments.data || !attendance.data || !certs.data) return [];
+    if (kind === 'role') {
+      // por su rol: no requiere asistencia registrada
+      return people.data
+        .filter((p) => (roleFilter === TEAM ? p.role !== 'Participante' : p.role === roleFilter))
+        .sort((a, b) => a.role.localeCompare(b.role) || a.full_name.localeCompare(b.full_name))
+        .map((p) => ({ person: p, attended: true, cert: certs.data!.find((c) => c.person_id === p.id && c.kind === 'role') }));
+    }
     if (kind === 'general') {
       const ids = new Set(attendance.data.map((a) => a.person_id));
       return people.data
         .filter((p) => ids.has(p.id))
-        .map((p) => ({ person: p, attended: true, cert: certs.data!.find((c) => c.person_id === p.id && !c.activity_id) }));
+        .map((p) => ({ person: p, attended: true, cert: certs.data!.find((c) => c.person_id === p.id && !c.activity_id && c.kind !== 'role') }));
     }
     if (!act) return [];
     return attendanceRows(act, peopleMap, enrollments.data, attendance.data).map((r) => ({
@@ -68,7 +81,7 @@ export default function Certificates() {
       attended: !!r.attendance,
       cert: certs.data!.find((c) => c.person_id === r.person.id && c.activity_id === act.id),
     }));
-  }, [kind, act, people.data, enrollments.data, attendance.data, certs.data, peopleMap]);
+  }, [kind, roleFilter, act, people.data, enrollments.data, attendance.data, certs.data, peopleMap]);
 
   const selected = recipients.filter((r) => r.attended && !excluded.has(r.person.id));
   const current = selected[Math.min(idx, Math.max(selected.length - 1, 0))];
@@ -76,13 +89,19 @@ export default function Certificates() {
   const dataFor = useMemo(
     () => (person: Person, folio: string | null): CertificateData | null => {
       if (!settings) return null;
-      const attendedActs = acts.filter((a) => (attendance.data ?? []).some((x) => x.person_id === person.id && x.activity_id === a.id));
-      return {
+      const base = {
         color: event.color_primary, eventName: event.name, organizer: event.organizer, acronym: event.acronym, logoUrl: event.logo_url,
         folio, personName: person.full_name, signers: settings.signers, showVerification: settings.show_verification,
-        body: renderTemplate(kind === 'general' ? settings.body_general : settings.body_activity, {
-          person: person.full_name, activity: kind === 'general' ? null : act, eventName: event.name, start: event.start_date, end: event.end_date,
-        }),
+      };
+      const vars = { person: person.full_name, eventName: event.name, start: event.start_date, end: event.end_date, role: person.role };
+      if (kind === 'role') {
+        const given = activitiesGivenBy(person.full_name, acts);
+        return { ...base, title: 'Constancia de participación', body: renderTemplate(settings.body_role, vars), list: given.length ? given.map(activityLine) : undefined };
+      }
+      const attendedActs = acts.filter((a) => (attendance.data ?? []).some((x) => x.person_id === person.id && x.activity_id === a.id));
+      return {
+        ...base,
+        body: renderTemplate(kind === 'general' ? settings.body_general : settings.body_activity, { ...vars, activity: kind === 'general' ? null : act }),
         list: kind === 'general' ? attendedActs.map(activityLine) : undefined,
       };
     },
@@ -98,7 +117,7 @@ export default function Certificates() {
   if (!activities.data || !people.data || !enrollments.data || !attendance.data || !certs.data || !settings) return <Loading />;
 
   const setS = (p: Partial<CertificateSettings>) => { setSettings({ ...settings, ...p }); setDirty(true); };
-  const bodyKey = kind === 'general' ? 'body_general' : 'body_activity';
+  const bodyKey = kind === 'role' ? 'body_role' : kind === 'general' ? 'body_general' : 'body_activity';
   const insertField = (f: string) => {
     const el = bodyRef.current;
     const text = settings[bodyKey];
@@ -118,7 +137,9 @@ export default function Certificates() {
   const issue = async () => {
     if (dirty && full) await saveSettings();
     const ids = selected.map((r) => r.person.id);
-    const { data, error } = await supabase.rpc('issue_certificates', { p_event: event.id, p_activity: kind === 'general' ? null : act!.id, p_people: ids });
+    const { data, error } = await supabase.rpc('issue_certificates', {
+      p_event: event.id, p_activity: kind === 'activity' ? act!.id : null, p_people: ids, p_kind: kind === 'role' ? 'role' : 'attendance',
+    });
     if (error) throw error;
     await invalidate('certificates');
     return data as Certificate[];
@@ -133,7 +154,8 @@ export default function Certificates() {
         .map((r) => dataFor(r.person, issued.find((c) => c.person_id === r.person.id)?.folio ?? null))
         .filter((x): x is CertificateData => !!x);
       const pdf = await certificatesPdf(list);
-      downloadBlob(pdf.output('blob'), `Constancias-${kind === 'general' ? `${event.code_prefix}-general` : act!.code}.pdf`);
+      const name = kind === 'activity' ? act!.code : kind === 'general' ? `${event.code_prefix}-general` : `${event.code_prefix}-${roleFilter === TEAM ? 'equipo' : roleFilter.toLowerCase()}`;
+      downloadBlob(pdf.output('blob'), `Constancias-${name}.pdf`);
     } catch (e) {
       toast(friendlyError(e), true);
     } finally {
@@ -154,11 +176,12 @@ export default function Certificates() {
         setBusy(`Enviando ${sent + 1} de ${selected.length}…`);
         const pdf = await certificatesPdf([d]);
         const others = certs.data!
-          .filter((c) => c.person_id === r.person.id && c.id !== cert.id && c.activity_id)
+          .filter((c) => c.person_id === r.person.id && c.id !== cert.id && c.activity_id && c.kind === 'attendance')
           .map((c) => ({ name: acts.find((a) => a.id === c.activity_id)?.name ?? '', url: certificateUrl(c.folio) }));
         await callFunction('send-mail', {
           kind: 'certificate', certificate_id: cert.id, pdf_base64: pdf.output('datauristring').split(',')[1],
           duration: act && kind === 'activity' ? durationLabel(act.starts_at, act.ends_at) : '', verify_url: certificateUrl(cert.folio), others,
+          detail: kind === 'role' ? `Constancia de participación como ${r.person.role.toLowerCase()}` : undefined,
         });
         sent++;
       }
@@ -202,7 +225,7 @@ export default function Certificates() {
         <div className="card card-pad stack" style={{ gap: 16 }}>
           <Field label="Tipo de constancia">
             <div className="stack" style={{ gap: 6 }}>
-              {([['activity', 'Por actividad', 'una por taller o conferencia'], ['general', 'General', 'lista todas sus actividades']] as const).map(([k, t, d]) => (
+              {([['activity', 'Por actividad', 'una por taller o conferencia'], ['general', 'General', 'lista todas sus actividades'], ['role', 'Por rol', 'organizadores, staff, talleristas, ponentes…']] as const).map(([k, t, d]) => (
                 <button key={k} type="button" className={'option' + (kind === k ? ' on' : '')} style={{ gridTemplateColumns: '16px 1fr', padding: '10px 12px', borderRadius: 12, fontSize: 13 }} onClick={() => { setKind(k); setIdx(0); setExcluded(new Set()); }}>
                   <span className={'dot' + (kind === k ? ' on' : '')} />
                   <span><b>{t}</b> — {d}</span>
@@ -210,6 +233,14 @@ export default function Certificates() {
               ))}
             </div>
           </Field>
+          {kind === 'role' && (
+            <Field label="Rol" hint="Para talleristas, conferencistas y ponentes se listan las actividades que impartieron (según el nombre capturado en Programa).">
+              <select className="input input-sm" value={roleFilter} onChange={(e) => { setRoleFilter(e.target.value); setIdx(0); setExcluded(new Set()); }}>
+                <option value={TEAM}>Todo el equipo (todos menos participantes)</option>
+                {ROLES.map((r) => <option key={r} value={r}>{r} ({(people.data ?? []).filter((p) => p.role === r).length})</option>)}
+              </select>
+            </Field>
+          )}
           {kind === 'activity' && (
             <Field label="Actividad">
               <select className="input input-sm" value={act?.id ?? ''} onChange={(e) => { setActivityId(e.target.value); setIdx(0); setExcluded(new Set()); }}>
@@ -220,7 +251,7 @@ export default function Certificates() {
           <Field label="Texto">
             <textarea ref={bodyRef} className="input" style={{ fontSize: 13, minHeight: 130 }} disabled={!full} value={settings[bodyKey]} onChange={(e) => setS({ [bodyKey]: e.target.value } as Partial<CertificateSettings>)} />
             <div className="chips">
-              {FIELDS.map((f) => (
+              {(kind === 'role' ? ROLE_FIELDS : FIELDS).map((f) => (
                 <button key={f} type="button" className="pill" disabled={!full} style={{ fontSize: 11, fontWeight: 600, padding: '3px 8px' }} onClick={() => insertField(f)}>{f}</button>
               ))}
             </div>
@@ -265,7 +296,7 @@ export default function Certificates() {
             )}
           </div>
           <div className="cert-preview">
-            {current ? <canvas ref={canvasRef} /> : <div className="empty" style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Nadie tiene asistencia registrada {kind === 'activity' ? 'en esta actividad' : 'todavía'}.</div>}
+            {current ? <canvas ref={canvasRef} /> : <div className="empty" style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{kind === 'role' ? 'No hay personas con este rol.' : `Nadie tiene asistencia registrada ${kind === 'activity' ? 'en esta actividad' : 'todavía'}.`}</div>}
           </div>
           {current && !current.cert && <span className="field-hint">El folio se asigna al descargar o enviar.</span>}
           {kind === 'activity' && act && <span className="field-hint">{act.type} · {longDate(act.day)} · {durationLabel(act.starts_at, act.ends_at)}</span>}
@@ -275,10 +306,12 @@ export default function Certificates() {
           <div className="stack" style={{ padding: '16px 18px', borderBottom: '1px solid var(--color-divider)', gap: 8 }}>
             <div className="row" style={{ justifyContent: 'space-between' }}>
               <span style={{ fontSize: 14, fontWeight: 700 }}>Destinatarios</span>
-              <span style={{ fontSize: 12 }} className="muted">{kind === 'activity' ? `${recipients.length} en la lista` : `${recipients.length} con asistencia`}</span>
+              <span style={{ fontSize: 12 }} className="muted">{kind === 'activity' ? `${recipients.length} en la lista` : kind === 'role' ? `${recipients.length} ${recipients.length === 1 ? 'persona' : 'personas'}` : `${recipients.length} con asistencia`}</span>
             </div>
             <div className="chips">
-              <span className="tag tag-ok" style={{ padding: '4px 9px' }}>Asistieron {recipients.filter((r) => r.attended).length}</span>
+              {kind === 'role'
+                ? <span className="tag tag-ev" style={{ padding: '4px 9px' }}>{roleFilter === TEAM ? 'Equipo' : roleFilter} {recipients.length}</span>
+                : <span className="tag tag-ok" style={{ padding: '4px 9px' }}>Asistieron {recipients.filter((r) => r.attended).length}</span>}
               {kind === 'activity' && <span className="tag tag-muted" style={{ padding: '4px 9px' }}>Sin asistencia {notAttended}</span>}
             </div>
           </div>
@@ -301,7 +334,7 @@ export default function Certificates() {
                 <span className={'check' + (on ? ' on' : '')}>{on ? '✓' : ''}</span>
                 <div style={{ minWidth: 0 }}>
                   <div style={{ fontSize: 13, fontWeight: 700 }}>{r.person.full_name}</div>
-                  <div className="ellipsis" style={{ fontSize: 11 }}><span className="muted">{r.person.email}</span></div>
+                  <div className="ellipsis" style={{ fontSize: 11 }}><span className="muted">{kind === 'role' ? `${r.person.role} · ` : ''}{r.person.email}</span></div>
                 </div>
                 <span className={'tag ' + (st === 'Enviada' ? 'tag-ok' : st === 'Lista' ? 'tag-ev' : 'tag-muted')}>{st}</span>
               </button>

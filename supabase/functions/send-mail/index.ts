@@ -25,7 +25,7 @@ Deno.serve(async (req) => {
       // deno-lint-ignore no-explicit-any
       const c = cert as any;
       const first = String(c.person.full_name).split(' ')[0];
-      const detail = c.activity
+      const detail = body.detail ? esc(body.detail) : c.activity
         ? `${esc(c.activity.type)} ${esc(c.activity.name)} · ${esc(body.duration ?? '')} · ${fmtDate(c.activity.day)}`
         : 'Constancia general de participación';
       const others = (body.others ?? []) as { name: string; url: string }[];

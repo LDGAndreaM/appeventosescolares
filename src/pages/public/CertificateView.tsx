@@ -12,11 +12,13 @@ import '../event/event.css';
 interface Verified {
   folio: string;
   issued_at: string;
-  person: { full_name: string };
+  kind?: 'attendance' | 'role';
+  person: { full_name: string; role?: string };
   event: { name: string; acronym: string; organizer: string; logo_url: string | null; color_primary: string; start_date: string; end_date: string };
   activity: { type: string; name: string; speaker: string; day: string; starts_at: string; ends_at: string } | null;
   attended: { type: string; name: string; day: string; starts_at: string; ends_at: string }[] | null;
-  settings: { body_activity: string; body_general: string; signers: Signer[]; show_verification: boolean };
+  given?: { type: string; name: string; day: string; starts_at: string; ends_at: string }[] | null;
+  settings: { body_activity: string; body_general: string; body_role?: string; signers: Signer[]; show_verification: boolean };
 }
 
 /** Verificación pública de una constancia (destino del QR) y descarga en PDF. */
@@ -37,10 +39,20 @@ export default function CertificateView() {
     ? {
         color: c.event.color_primary, eventName: c.event.name, organizer: c.event.organizer, acronym: c.event.acronym, logoUrl: c.event.logo_url,
         folio: c.folio, personName: c.person.full_name, signers: c.settings.signers, showVerification: c.settings.show_verification,
-        body: renderTemplate(c.activity ? c.settings.body_activity : c.settings.body_general, {
-          person: c.person.full_name, activity: c.activity, eventName: c.event.name, start: c.event.start_date, end: c.event.end_date,
-        }),
-        list: c.activity ? undefined : (c.attended ?? []).map((a) => activityLine({ ...a, speaker: '' })),
+        ...(c.kind === 'role'
+          ? {
+              title: 'Constancia de participación',
+              body: renderTemplate(c.settings.body_role || 'Por su valiosa participación como {rol} en {evento}, celebrado del {fechas}.', {
+                person: c.person.full_name, role: c.person.role, eventName: c.event.name, start: c.event.start_date, end: c.event.end_date,
+              }),
+              list: c.given?.length ? c.given.map((a) => activityLine({ ...a, speaker: '' })) : undefined,
+            }
+          : {
+              body: renderTemplate(c.activity ? c.settings.body_activity : c.settings.body_general, {
+                person: c.person.full_name, activity: c.activity, eventName: c.event.name, start: c.event.start_date, end: c.event.end_date,
+              }),
+              list: c.activity ? undefined : (c.attended ?? []).map((a) => activityLine({ ...a, speaker: '' })),
+            }),
       }
     : null;
 

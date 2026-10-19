@@ -25,7 +25,7 @@ participantes con paquetes y abonos, asistencia por QR y constancias. Implementa
 | 2a | `…/asistencia/:actividad` | QR por actividad, descarga PNG/JPG, proyección, horario del QR, marcar a mano |
 | 2b | (diálogo) | Aviso de cupo lleno con alternativas del mismo horario o lista de espera |
 | 2c | `/a/:codigo` | El asistente escanea el QR y confirma con su correo |
-| 3a | `…/constancias` | Plantilla, firmas, vista previa, PDF y envío por correo; solo a quien asistió |
+| 3a | `…/constancias` | Por actividad o general (solo a quien asistió) y **por rol** (organizadores, colaboradores, staff, talleristas, ponentes…); plantilla, firmas, PDF y correo |
 | 3b | `…/exportar` | Participantes, pagos, asistencia y constancias en Excel (.xlsx) o CSV |
 | — | `/c/:folio` | Verificación pública de la constancia (destino de su QR) y descarga en PDF |
 

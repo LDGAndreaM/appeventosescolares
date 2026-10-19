@@ -102,7 +102,8 @@ export function certificatesDataset(s: Pick<ExportSource, 'people' | 'activities
         const p = people.get(c.person_id);
         const a = c.activity_id ? acts.get(c.activity_id) : null;
         return [
-          p?.full_name ?? '', p?.email ?? '', a ? a.name : 'General (todas sus actividades)', a ? dmy(a.day) : '',
+          p?.full_name ?? '', p?.email ?? '',
+          c.kind === 'role' ? `Participación como ${p?.role.toLowerCase() ?? ''}` : a ? a.name : 'General (todas sus actividades)', a ? dmy(a.day) : '',
           a ? durationLabel(a.starts_at, a.ends_at) : '', c.folio, c.status === 'sent' ? 'Enviada' : 'Lista',
           c.sent_at ? dmy(c.sent_at) : '',
         ];
