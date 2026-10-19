@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useEventCtx } from '../../layout/EventLayout';
 import {
   callFunction, useActivities, useActivityStats, useBalances, useEnrollments, useInvalidateEvent, usePackages, usePayments, usePerson,
@@ -38,11 +38,14 @@ type Choice = { id: string; status: 'enrolled' | 'waitlist' };
 
 export default function PersonDetailRoute() {
   const { personId } = useParams();
-  return <PersonDetail key={personId ?? 'new'} />;
+  const loc = useLocation();
+  // cada «nueva persona» (incluido «Guardar y agregar otra») empieza con el formulario limpio
+  return <PersonDetail key={personId ?? `new-${loc.key}`} />;
 }
 
 function PersonDetail() {
   const params = useParams();
+  const [search] = useSearchParams();
   const [createdId, setCreatedId] = useState<string | null>(null);
   /** id de la persona: el de la URL o el recién creado si el primer guardado se detuvo por cupo lleno. */
   const personId = params.personId ?? createdId ?? undefined;
@@ -58,7 +61,16 @@ function PersonDetail() {
   const payments = usePayments(event.id, personId ?? null);
   const balances = useBalances(event.id);
 
-  const [d, setD] = useState<Draft | null>(params.personId ? null : fromPerson());
+  const [d, setD] = useState<Draft | null>(() => {
+    if (params.personId) return null;
+    // «Guardar y agregar otra» conserva el rol y la descripción de la persona anterior
+    const draft = fromPerson();
+    const rol = search.get('rol');
+    const perfil = search.get('perfil');
+    if (rol && (ROLES as readonly string[]).includes(rol)) draft.role = rol as Role;
+    if (perfil && (PROFILES as readonly string[]).includes(perfil)) draft.profile = perfil as PersonProfile;
+    return draft;
+  });
   /** Elección por bloque simultáneo (clave = id de la primera actividad del bloque). */
   const [choices, setChoices] = useState<Record<string, Choice | null> | null>(params.personId ? null : {});
   const [full, setFull] = useState<{ act: SlotOption; block: SlotOption[]; key: string | null } | null>(null);
@@ -114,7 +126,7 @@ function PersonDetail() {
   };
 
   /** Guarda la persona y sincroniza sus inscripciones con el paquete y las elecciones. */
-  const save = async () => {
+  const save = async (andNew = false) => {
     if (!d.full_name.trim() || !d.email.trim()) return setError('Escribe nombre y correo.');
     if (isParticipant && d.profile === 'Estudiante' && !d.career.trim()) return setError('Elige la carrera del estudiante.');
     setBusy(true);
@@ -170,8 +182,9 @@ function PersonDetail() {
         if (error) throw error;
       }
       await invalidate('people', 'enrollments', 'activity-stats', 'balances', `person-${id}`);
-      toast(waitlisted.length ? `Guardado. ${waitlisted.join(', ')} está lleno: quedó en lista de espera.` : 'Cambios guardados');
-      if (!params.personId) nav(`../participantes/${id}`, { replace: true });
+      toast(waitlisted.length ? `Guardado. ${waitlisted.join(', ')} está lleno: quedó en lista de espera.` : andNew ? `${d.full_name.trim()} guardado. Agrega a la siguiente persona.` : 'Cambios guardados');
+      if (andNew) nav(`../participantes/nuevo?${new URLSearchParams({ rol: d.role, perfil: d.profile ?? '' })}`);
+      else if (!params.personId) nav(`../participantes/${id}`, { replace: true });
     } catch (err) {
       if ((err as Error).message !== 'ACTIVITY_FULL') setError(friendlyError(err));
     } finally {
@@ -222,7 +235,12 @@ function PersonDetail() {
         </div>
         <div className="page-actions">
           {personId && isParticipant && pkg && <button className="btn btn-secondary" onClick={sendReceipt}>Enviar comprobante</button>}
-          <button className="btn btn-primary" style={{ minWidth: 140 }} disabled={busy} onClick={save}>{busy ? 'Guardando…' : 'Guardar'}</button>
+          {personId ? (
+            <Link to={`../participantes/nuevo?${new URLSearchParams({ rol: d.role, perfil: d.profile ?? '' })}`} className="btn btn-secondary">+ Agregar otra persona</Link>
+          ) : (
+            <button className="btn btn-secondary" disabled={busy} onClick={() => save(true)}>Guardar y agregar otra</button>
+          )}
+          <button className="btn btn-primary" style={{ minWidth: 140 }} disabled={busy} onClick={() => save()}>{busy ? 'Guardando…' : 'Guardar'}</button>
         </div>
       </div>
       {error && <div className="alert" style={{ margin: '16px 36px 0' }}>{error}</div>}
