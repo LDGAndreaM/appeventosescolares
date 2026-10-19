@@ -84,10 +84,9 @@ export default function Login() {
           </div>
           <p className="auth-lead">Eventos escolares con programa, participantes, paquetes y pagos en un solo lugar.</p>
         </div>
-        <div className="row" style={{ fontSize: 13, gap: 24 }}>
-          <span>ITSON · {new Date().getFullYear()}</span>
-          <a href="mailto:soporte@aforo.app" style={{ color: '#fff', textDecoration: 'none' }}>Ayuda</a>
-        </div>
+        {/* espacio inferior para que el texto quede centrado como en el diseño */}
+        <div aria-hidden="true" />
+
       </section>
 
       <section className="auth-form">
