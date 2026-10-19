@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics><meta name="design_doc_mode" content="canvas"><script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap"><style>:root{--font-heading:"Figtree",system-ui,sans-serif;--font-body:"Figtree",system-ui,sans-serif;--font-heading-weight:700;--color-bg:#f4f6fb;--color-text:#1b1f2b;--color-divider:#e4e7ef;--color-neutral-100:#f7f8fb;--color-neutral-200:#eceef4;--color-neutral-300:#dde1ea;--color-neutral-400:#c2c7d3;--color-neutral-500:#9aa0ae;--color-neutral-600:#737989;--color-neutral-700:#5a6070;--color-neutral-800:#3d4250;--af:#1d5bd8;--af-700:#1544a8;--af-100:#e8eefc;--af-purple:#6b45d6;--af-purple-200:#d8ccf7;--af-green:#0f9b74;--af-green-200:#bfeedd;--ev:#3047c8;--ev-100:color-mix(in srgb,var(--ev) 9%,#fff);--ev-200:color-mix(in srgb,var(--ev) 22%,#fff);--ev-700:color-mix(in srgb,var(--ev) 78%,#000);--ev-800:color-mix(in srgb,var(--ev) 58%,#000)}body{margin:0;background:#e7e9f0;font-family:var(--font-body)}h1,h2,h3,h4,h5{font-weight:700;letter-spacing:-0.02em}a{color:var(--af-700)}a:hover{color:var(--af)}.dv-turn{padding:40px 44px 32px;scroll-margin-top:16px}.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 8px}.dv-tid{font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#1a1a1a;color:#fff;text-decoration:none}.dv-tname{font:600 13px/1.2 system-ui,sans-serif;color:#1a1a1a}.dv-opts{display:flex;flex-wrap:wrap;gap:36px;align-items:flex-start}.dv-opt{flex:none;display:flex;flex-direction:column;gap:9px;scroll-margin-top:16px}.dv-oid{font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;text-decoration:none}.dv-olabel{display:flex;align-items:baseline;gap:8px;font:400 12px/1.3 system-ui,sans-serif;color:rgba(0,0,0,.6)}.dv-card{max-width:100%;background:var(--color-bg);box-shadow:0 2px 12px rgba(27,31,43,.08);border-radius:24px;overflow:hidden}.dv-opt:target .dv-oid{background:#2a78d6;color:#fff}.dv-grp{font:600 11px ui-monospace,Menlo,monospace;letter-spacing:.06em;text-transform:uppercase;color:rgba(0,0,0,.55);margin:36px 0 14px;padding-top:12px;border-top:2px solid rgba(0,0,0,.15)}.dv-next{margin:32px 0 0;font:12px/1.5 system-ui,sans-serif;color:rgba(0,0,0,.55)}</style></helmet>
+<section class="dv-turn" id="t3">
+<div class="dv-thd"><a class="dv-tid" href="#t3">3</a><span class="dv-tname">Constancias personalizadas · exportar a Excel / CSV</span></div>
+<p style="font:12px/1.5 system-ui,sans-serif;color:rgba(0,0,0,.6);max-width:760px;margin:0">Las constancias se generan por actividad y solo para quien tiene asistencia registrada (QR o manual). Los botones de descarga de <a class="dv-oid" href="#3b">3b</a> sí bajan el archivo de ejemplo.</p>
+<div class="dv-opts" style="margin-top:20px">
+
+<div class="dv-opt" id="3a"><div class="dv-olabel"><a class="dv-oid" href="#3a">3a</a>Constancias — plantilla, vista previa y envío</div>
+<div class="dv-card" style="width:1640px;min-height:880px;display:flex">
+<dc-import name="SidebarV2" active="Constancias" style="width:232px;flex:none" hint-size="232px,880px"></dc-import>
+<main style="flex:1;min-width:0;display:flex;flex-direction:column">
+<div style="padding:28px 36px 20px;border-bottom:1px solid var(--color-divider);display:flex;justify-content:space-between;align-items:flex-end"><div><div style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;color:var(--color-neutral-700)">Evento finalizado · 30 oct 2026</div><h2 style="margin:4px 0 0">Constancias</h2></div><div style="display:flex;gap:8px"><button style="border-radius:12px;background:transparent;border:1.5px solid var(--color-neutral-300);padding:10px 16px;font:700 14px/1.2 var(--font-heading);cursor:pointer">Descargar todas (PDF)</button><button style="border-radius:12px;background:var(--ev);color:#fff;border:1.5px solid var(--ev);padding:10px 16px;font:700 14px/1.2 var(--font-heading);cursor:pointer" style-hover="background:var(--ev-700)">Enviar 14 constancias por correo</button></div></div>
+<div style="display:grid;grid-template-columns:300px minmax(0,1fr) 340px;gap:16px;padding:20px 36px 36px;flex:1;align-items:start">
+
+<div style="background:#fff;border-radius:20px;padding:20px;display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:12px;font-weight:600">Actividad</label><div style="border:1.5px solid var(--color-neutral-300);border-radius:12px;background:#fff;padding:10px 12px;font-size:14px;display:flex;justify-content:space-between"><span>Serigrafía básica · Taller</span><span>▾</span></div></div>
+<div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:12px;font-weight:600">Tipo de constancia</label><div style="display:flex;flex-direction:column;gap:6px">
+<div style="padding:10px 12px;border-radius:12px;border:1.5px solid var(--ev);background:var(--ev-100);font-size:13px;display:flex;gap:10px;align-items:center"><span style="width:16px;height:16px;border-radius:50%;border:2px solid var(--ev);background:var(--ev);box-shadow:inset 0 0 0 3px #fff;flex:none"></span><span><b>Por actividad</b> — una por taller o conferencia</span></div>
+<div style="padding:10px 12px;border-radius:12px;border:1.5px solid var(--color-divider);font-size:13px;display:flex;gap:10px;align-items:center"><span style="width:16px;height:16px;border-radius:50%;border:2px solid var(--color-neutral-400);flex:none"></span><span><b>General</b> — lista todas sus actividades</span></div>
+</div></div>
+<div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:12px;font-weight:600">Texto</label><div style="border:1.5px solid var(--color-neutral-300);border-radius:12px;background:#fff;padding:10px 12px;font-size:13px;line-height:1.55">Por su asistencia al {tipo} <span style="background:var(--ev-100);color:var(--ev-800);padding:0 4px;border-radius:4px">{actividad}</span>, con duración de <span style="background:var(--ev-100);color:var(--ev-800);padding:0 4px;border-radius:4px">{duración}</span>, realizado el <span style="background:var(--ev-100);color:var(--ev-800);padding:0 4px;border-radius:4px">{fecha}</span> en el marco de <span style="background:var(--ev-100);color:var(--ev-800);padding:0 4px;border-radius:4px">{evento}</span>.</div>
+<div style="display:flex;flex-wrap:wrap;gap:6px"><sc-for list="{{ certFields }}" as="c" hint-placeholder-count="6"><span style="font-size:11px;font-weight:600;padding:3px 8px;border-radius:999px;border:1.5px solid var(--color-neutral-300)">{{ c }}</span></sc-for></div></div>
+<div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:12px;font-weight:600">Firmas</label>
+<div style="border:1.5px solid var(--color-neutral-300);border-radius:12px;padding:10px 12px;font-size:13px;display:flex;justify-content:space-between"><span>Dr. Ramón Ochoa · Coordinador</span><span style="color:var(--color-neutral-600)">firma.png</span></div>
+<div style="border:1.5px solid var(--color-neutral-300);border-radius:12px;padding:10px 12px;font-size:13px;display:flex;justify-content:space-between"><span>Ana Valenzuela · Tallerista</span><span style="color:var(--color-neutral-600)">firma.png</span></div>
+</div>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-top:12px;border-top:1px solid var(--color-divider)"><div style="display:flex;flex-direction:column"><span style="font-size:13px;font-weight:700">Folio y QR de verificación</span><span style="font-size:12px;color:var(--color-neutral-700)">Para validar que es auténtica</span></div><span style="width:44px;height:26px;flex:none;border-radius:99px;background:var(--af-green);position:relative;display:block"><span style="position:absolute;right:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#fff"></span></span></div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:12px;min-width:0">
+<div style="display:flex;justify-content:space-between;align-items:center;font-size:13px"><span style="font-weight:700">Vista previa · Karla Estrada Félix</span><span style="color:var(--color-neutral-700)">‹ 1 de 14 ›</span></div>
+<div style="background:#fff;border-radius:16px;box-shadow:0 10px 30px rgba(27,31,43,.10);aspect-ratio:11/8.5;padding:40px 48px;display:flex;flex-direction:column;position:relative;overflow:hidden">
+<div style="position:absolute;left:0;top:0;bottom:0;width:14px;background:var(--ev)"></div>
+<div style="display:flex;justify-content:space-between;align-items:flex-start">
+<div style="display:flex;gap:12px;align-items:center"><div style="width:52px;height:52px;border-radius:14px;background:var(--ev);color:#fff;display:flex;align-items:flex-end;padding:6px;font-weight:700">AD</div><div style="display:flex;flex-direction:column"><span style="font-size:14px;font-weight:700">Jornadas de Diseño AD 2026</span><span style="font-size:12px;color:var(--color-neutral-700)">Academia de Diseño · ITSON</span></div></div>
+<span style="font:600 11px ui-monospace,Menlo,monospace;color:var(--color-neutral-600)">Folio AD26-SER-0142</span>
+</div>
+<div style="margin-top:auto;display:flex;flex-direction:column;gap:10px">
+<span style="font-size:13px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--ev)">Constancia de asistencia</span>
+<span style="font-size:14px;color:var(--color-neutral-700)">Se otorga la presente a</span>
+<span style="font-size:44px;font-weight:700;line-height:1.05;letter-spacing:-0.02em">Karla Estrada Félix</span>
+<p style="font-size:15px;line-height:1.55;max-width:620px;margin:4px 0 0;text-wrap:pretty">Por su asistencia al taller <b>Serigrafía básica</b>, impartido por Ana Valenzuela, con duración de <b>2 horas</b>, realizado el <b>27 de octubre de 2026</b> en el marco de las <b>Jornadas de Diseño AD 2026</b>.</p>
+</div>
+<div style="margin-top:auto;display:flex;justify-content:space-between;align-items:flex-end;gap:24px">
+<div style="display:flex;gap:40px">
+<div style="display:flex;flex-direction:column;gap:4px;width:180px"><div style="height:36px;border-bottom:1.5px solid var(--color-text)"></div><span style="font-size:12px;font-weight:700">Dr. Ramón Ochoa</span><span style="font-size:11px;color:var(--color-neutral-700)">Coordinador del evento</span></div>
+<div style="display:flex;flex-direction:column;gap:4px;width:180px"><div style="height:36px;border-bottom:1.5px solid var(--color-text)"></div><span style="font-size:12px;font-weight:700">Ana Valenzuela</span><span style="font-size:11px;color:var(--color-neutral-700)">Tallerista</span></div>
+</div>
+<div style="display:flex;flex-direction:column;align-items:center;gap:4px"><canvas ref="{{ certQrRef }}" width="72" height="72" style="width:72px;height:72px;image-rendering:pixelated"></canvas><span style="font-size:10px;color:var(--color-neutral-600)">Verificar</span></div>
+</div>
+</div>
+</div>
+
+<div style="background:#fff;border-radius:20px;overflow:hidden">
+<div style="padding:16px 18px;border-bottom:1px solid var(--color-divider);display:flex;flex-direction:column;gap:8px"><div style="display:flex;justify-content:space-between"><span style="font-size:14px;font-weight:700">Destinatarios</span><span style="font-size:12px;color:var(--color-neutral-700)">17 inscritos</span></div><div style="display:flex;gap:6px;flex-wrap:wrap"><span style="font-size:11px;font-weight:700;padding:4px 9px;border-radius:999px;background:#dcf3ea;color:#0b6b50">Asistieron 14</span><span style="font-size:11px;font-weight:700;padding:4px 9px;border-radius:999px;background:var(--color-neutral-200);color:var(--color-neutral-700)">Sin asistencia 3</span></div></div>
+<sc-for list="{{ certRecipients }}" as="p" hint-placeholder-count="8">
+<div style="display:grid;grid-template-columns:18px minmax(0,1fr) auto;gap:10px;padding:10px 18px;border-bottom:1px solid var(--color-divider);align-items:center;opacity:{{ p.op }}"><span style="width:16px;height:16px;border-radius:5px;border:1.5px solid {{ p.boxBd }};background:{{ p.boxBg }};color:#fff;font-size:11px;display:flex;align-items:center;justify-content:center">{{ p.check }}</span><div style="min-width:0"><div style="font-size:13px;font-weight:700">{{ p.n }}</div><div style="font-size:11px;color:var(--color-neutral-700);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ p.e }}</div></div><span style="font-size:11px;font-weight:700;padding:3px 8px;border-radius:999px;background:{{ p.bg }};color:{{ p.fg }}">{{ p.st }}</span></div>
+</sc-for>
+</div>
+
+</div>
+</main>
+</div></div>
+
+<div class="dv-opt" id="3b"><div class="dv-olabel"><a class="dv-oid" href="#3b">3b</a>Exportar a Excel / CSV</div>
+<div class="dv-card" style="width:1280px;min-height:820px;display:flex">
+<dc-import name="SidebarV2" active="Exportar" style="width:232px;flex:none" hint-size="232px,820px"></dc-import>
+<main style="flex:1;min-width:0;display:flex;flex-direction:column">
+<div style="padding:28px 36px 20px;border-bottom:1px solid var(--color-divider)"><div style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;color:var(--color-neutral-700)">Reportes</div><h2 style="margin:4px 0 0">Exportar datos</h2></div>
+<div style="display:grid;grid-template-columns:360px minmax(0,1fr);gap:16px;padding:20px 36px 36px;flex:1;align-items:start">
+<div style="background:#fff;border-radius:20px;padding:20px;display:flex;flex-direction:column;gap:18px">
+<div style="display:flex;flex-direction:column;gap:8px"><label style="font-size:12px;font-weight:600">¿Qué quieres exportar?</label>
+<sc-for list="{{ exportSets }}" as="x" hint-placeholder-count="4">
+<div onClick="{{ x.pick }}" style="padding:12px 14px;border-radius:14px;border:1.5px solid {{ x.bd }};background:{{ x.bg }};display:grid;grid-template-columns:18px 1fr;gap:10px;cursor:pointer"><span style="width:16px;height:16px;border-radius:5px;border:1.5px solid {{ x.boxBd }};background:{{ x.boxBg }};color:#fff;font-size:11px;display:flex;align-items:center;justify-content:center;margin-top:2px">{{ x.check }}</span><div><div style="font-size:14px;font-weight:700">{{ x.n }}</div><div style="font-size:12px;color:var(--color-neutral-700)">{{ x.d }}</div></div></div>
+</sc-for>
+</div>
+<div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:12px;font-weight:600">Filtrar por rol</label><div style="border:1.5px solid var(--color-neutral-300);border-radius:12px;padding:10px 12px;font-size:14px;display:flex;justify-content:space-between"><span>Todos los roles</span><span>▾</span></div></div>
+<div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:12px;font-weight:600">Formato</label>
+<div style="display:grid;grid-template-columns:1fr 1fr;padding:4px;border-radius:14px;background:var(--color-neutral-200)">
+<span onClick="{{ setXlsx }}" style="padding:10px;border-radius:10px;text-align:center;font-size:14px;font-weight:700;cursor:pointer;background:{{ fmtX.bg }};box-shadow:{{ fmtX.sh }}">Excel (.xls)</span>
+<span onClick="{{ setCsv }}" style="padding:10px;border-radius:10px;text-align:center;font-size:14px;font-weight:700;cursor:pointer;background:{{ fmtC.bg }};box-shadow:{{ fmtC.sh }}">CSV</span>
+</div><span style="font-size:12px;color:var(--color-neutral-700)">{{ fmtNote }}</span></div>
+<button onClick="{{ doExport }}" style="border-radius:12px;background:var(--ev);color:#fff;border:1.5px solid var(--ev);padding:13px 16px;font:700 15px/1.2 var(--font-heading);cursor:pointer" style-hover="background:var(--ev-700)">{{ exportLabel }}</button>
+</div>
+<div style="background:#fff;border-radius:20px;overflow:hidden;min-width:0">
+<div style="padding:16px 20px;border-bottom:1px solid var(--color-divider);display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:14px;font-weight:700">Vista previa · {{ previewTitle }}</span><span style="font-size:12px;color:var(--color-neutral-700)">{{ previewCount }}</span></div>
+<div style="overflow:hidden">
+<div style="display:grid;grid-template-columns:1.4fr 1fr 1.3fr .8fr .7fr .7fr 1fr .8fr;gap:10px;padding:10px 20px;background:var(--color-neutral-100);font-size:11px;font-weight:700;color:var(--color-neutral-700);border-bottom:1px solid var(--color-divider)"><sc-for list="{{ csvHead }}" as="h" hint-placeholder-count="8"><span>{{ h }}</span></sc-for></div>
+<sc-for list="{{ csvRows }}" as="r" hint-placeholder-count="8">
+<div style="display:grid;grid-template-columns:1.4fr 1fr 1.3fr .8fr .7fr .7fr 1fr .8fr;gap:10px;padding:9px 20px;border-bottom:1px solid var(--color-divider);font-size:12px"><sc-for list="{{ r }}" as="c" hint-placeholder-count="8"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ c }}</span></sc-for></div>
+</sc-for>
+</div>
+</div>
+</div>
+</main>
+</div></div>
+
+<div class="dv-opt" id="3c"><div class="dv-olabel"><a class="dv-oid" href="#3c">3c</a>Correo que recibe el participante</div>
+<div class="dv-card" style="width:390px;height:844px;display:flex;flex-direction:column;border:8px solid #1b1f2b;border-radius:44px;overflow:hidden;background:var(--color-bg)">
+<div style="padding:16px 20px 14px;display:flex;flex-direction:column;gap:10px;background:#fff;border-bottom:1px solid var(--color-divider)">
+<div style="display:flex;justify-content:space-between;font-size:12px;font-weight:600"><span>9:41</span><span>Correo</span></div>
+<div style="display:flex;gap:10px;align-items:center;margin-top:6px"><div style="width:36px;height:36px;border-radius:50%;background:var(--ev);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center">AD</div><div style="display:flex;flex-direction:column"><span style="font-size:13px;font-weight:700">Jornadas de Diseño AD 2026</span><span style="font-size:11px;color:var(--color-neutral-700)">vía Aforo · 31 oct</span></div></div>
+<span style="font-size:17px;font-weight:700;line-height:1.25">Tu constancia: Serigrafía básica</span>
+</div>
+<div style="padding:20px;display:flex;flex-direction:column;gap:14px;flex:1">
+<p style="margin:0;font-size:14px;line-height:1.55">Hola Karla, gracias por asistir a las Jornadas de Diseño AD 2026. Adjuntamos tu constancia de asistencia.</p>
+<div style="background:#fff;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:8px;box-shadow:0 4px 14px rgba(27,31,43,.08);position:relative;overflow:hidden"><div style="position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--ev)"></div><span style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--ev)">Constancia de asistencia</span><span style="font-size:20px;font-weight:700">Karla Estrada Félix</span><span style="font-size:12px;color:var(--color-neutral-700);line-height:1.45">Taller Serigrafía básica · 2 horas · 27 oct 2026</span></div>
+<div style="display:flex;gap:10px;align-items:center;padding:12px;border-radius:14px;background:#fff;border:1px solid var(--color-divider)"><span style="width:36px;height:44px;border-radius:6px;background:#fdecea;color:#b3261e;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center">PDF</span><div style="display:flex;flex-direction:column"><span style="font-size:13px;font-weight:700">Constancia-AD26-SER-0142.pdf</span><span style="font-size:11px;color:var(--color-neutral-700)">184 KB</span></div></div>
+<span style="font-size:12px;font-weight:700;color:var(--color-neutral-700);margin-top:6px">También asististe a</span>
+<div style="display:flex;flex-direction:column;background:#fff;border-radius:14px;overflow:hidden">
+<div style="padding:12px 14px;border-bottom:1px solid var(--color-divider);display:flex;justify-content:space-between;font-size:13px"><span>Motion design</span><span style="color:var(--ev-700);font-weight:700">Descargar</span></div>
+<div style="padding:12px 14px;border-bottom:1px solid var(--color-divider);display:flex;justify-content:space-between;font-size:13px"><span>Ilustración editorial</span><span style="color:var(--ev-700);font-weight:700">Descargar</span></div>
+<div style="padding:12px 14px;display:flex;justify-content:space-between;font-size:13px"><span>Diseño y territorio</span><span style="color:var(--ev-700);font-weight:700">Descargar</span></div>
+</div>
+</div>
+</div></div>
+
+</div>
+<p class="dv-next">Siguientes pasos: "agrega la constancia general con todas sus actividades" · "permite subir un diseño de fondo para la constancia" · "agrega exportación de un solo taller desde 2a"</p>
+</section>
+<section class="dv-turn" id="t2">
+<div class="dv-thd"><a class="dv-tid" href="#t2">2</a><span class="dv-tname">Asistencia con QR por actividad · aviso de cupo lleno</span></div>
+<p style="font:12px/1.5 system-ui,sans-serif;color:rgba(0,0,0,.6);max-width:760px;margin:0">Cada actividad tiene su propio QR. El asistente lo escanea, confirma con su correo y queda marcado. Los botones PNG / JPG de <a class="dv-oid" href="#2a">2a</a> sí descargan el cartel.</p>
+<div class="dv-opts" style="margin-top:20px">
+
+<div class="dv-opt" id="2a"><div class="dv-olabel"><a class="dv-oid" href="#2a">2a</a>Asistencia — QR de la actividad y control de asistentes</div>
+<div class="dv-card" style="width:1640px;min-height:860px;display:flex">
+<dc-import name="SidebarV2" active="Programa" style="width:232px;flex:none" hint-size="232px,860px"></dc-import>
+<main style="flex:1;min-width:0;display:flex;flex-direction:column">
+<div style="padding:28px 36px 20px;border-bottom:1px solid var(--color-divider);display:flex;justify-content:space-between;align-items:flex-end"><div><div style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;color:var(--color-neutral-700)">Programa / asistencia</div><h2 style="margin:4px 0 0">Control de asistencia</h2></div><button style="border-radius:12px;background:transparent;border:1.5px solid var(--color-neutral-300);padding:10px 16px;font:700 14px/1.2 var(--font-heading);cursor:pointer">Exportar asistencia CSV</button></div>
+<div style="display:grid;grid-template-columns:270px 360px minmax(0,1fr);gap:16px;padding:20px 36px 36px;flex:1;align-items:start">
+<div style="background:#fff;border-radius:20px;overflow:hidden">
+<div style="padding:16px 18px;font-size:13px;font-weight:700;border-bottom:1px solid var(--color-divider)">Actividades · Mar 27</div>
+<sc-for list="{{ attActs }}" as="a" hint-placeholder-count="6">
+<div style="padding:12px 18px;border-bottom:1px solid var(--color-divider);display:flex;flex-direction:column;gap:6px;background:{{ a.bg }};cursor:pointer" style-hover="background:var(--ev-100)">
+<div style="display:flex;justify-content:space-between;gap:8px"><span style="font-size:14px;font-weight:700">{{ a.n }}</span><span style="font-size:12px;color:var(--color-neutral-700);flex:none">{{ a.start }}</span></div>
+<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--color-neutral-700)"><span>{{ a.att }} de {{ a.reg }} asistieron</span><span style="font-weight:700;color:var(--ev-700)">{{ a.pctTxt }}</span></div>
+<div style="height:6px;border-radius:99px;overflow:hidden;background:var(--color-neutral-200)"><div style="height:6px;border-radius:99px;width:{{ a.pct }}%;background:var(--ev)"></div></div>
+</div>
+</sc-for>
+</div>
+<div style="background:#fff;border-radius:24px;overflow:hidden;display:flex;flex-direction:column">
+<div style="background:var(--ev);color:#fff;padding:20px 22px;display:flex;flex-direction:column;gap:4px"><span style="font-size:12px;font-weight:600;opacity:.9">Jornadas de Diseño AD 2026 · Taller</span><span style="font-size:24px;font-weight:700;line-height:1.1">Serigrafía básica</span><span style="font-size:13px">Mar 27 · 12:00–14:00 · Taller de gráfica</span></div>
+<div style="padding:24px;display:flex;flex-direction:column;align-items:center;gap:12px">
+<div style="width:280px;height:280px;border-radius:16px;border:1.5px solid var(--color-divider);display:flex;align-items:center;justify-content:center;background:#fff"><canvas ref="{{ qrRef }}" width="248" height="248" style="width:248px;height:248px;image-rendering:pixelated"></canvas></div>
+<span style="font:600 14px ui-monospace,Menlo,monospace;letter-spacing:.12em">AD26-SER-27</span>
+<span style="font-size:12px;color:var(--color-neutral-700);text-align:center">Escanea para registrar tu asistencia</span>
+</div>
+<div style="padding:0 22px 22px;display:flex;flex-direction:column;gap:12px">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+<button onClick="{{ dlPng }}" style="border-radius:12px;background:var(--ev);color:#fff;border:1.5px solid var(--ev);padding:12px 14px;font:700 14px/1.2 var(--font-heading);cursor:pointer" style-hover="background:var(--ev-700)">Descargar PNG</button>
+<button onClick="{{ dlJpg }}" style="border-radius:12px;background:#fff;color:var(--ev-700);border:1.5px solid var(--ev);padding:12px 14px;font:700 14px/1.2 var(--font-heading);cursor:pointer" style-hover="background:var(--ev-100)">Descargar JPG</button>
+</div>
+<button style="border-radius:12px;background:transparent;border:1.5px solid var(--color-neutral-300);padding:11px 14px;font:700 14px/1.2 var(--font-heading);cursor:pointer">Proyectar en pantalla completa</button>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-top:12px;border-top:1px solid var(--color-divider)"><div style="display:flex;flex-direction:column"><span style="font-size:13px;font-weight:700">QR activo</span><span style="font-size:12px;color:var(--color-neutral-700)">De 11:45 a 14:15</span></div><span style="width:44px;height:26px;border-radius:99px;background:var(--af-green);position:relative;display:block"><span style="position:absolute;right:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#fff"></span></span></div>
+<div style="display:flex;justify-content:space-between;align-items:center"><div style="display:flex;flex-direction:column"><span style="font-size:13px;font-weight:700">Solo inscritos</span><span style="font-size:12px;color:var(--color-neutral-700)">Quien no esté inscrito queda como “sin inscripción”</span></div><span style="width:44px;height:26px;border-radius:99px;background:var(--color-neutral-300);position:relative;display:block;flex:none"><span style="position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#fff"></span></span></div>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px;min-width:0">
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+<div style="background:#fff;border-radius:20px;padding:18px 20px;display:flex;flex-direction:column;gap:2px"><span style="font-size:12px;font-weight:600;color:var(--color-neutral-700)">Inscritos</span><span style="font-size:32px;font-weight:700">17<span style="font-size:15px;color:var(--color-neutral-600);font-weight:500"> / 20 cupo</span></span></div>
+<div style="background:#fff;border-radius:20px;padding:18px 20px;display:flex;flex-direction:column;gap:2px"><span style="font-size:12px;font-weight:600;color:var(--color-neutral-700)">Asistieron</span><span style="font-size:32px;font-weight:700;color:var(--af-green)">14<span style="font-size:15px;color:var(--color-neutral-600);font-weight:500"> · 82%</span></span></div>
+<div style="background:#fff;border-radius:20px;padding:18px 20px;display:flex;flex-direction:column;gap:2px"><span style="font-size:12px;font-weight:600;color:var(--color-neutral-700)">Faltan</span><span style="font-size:32px;font-weight:700">3</span></div>
+</div>
+<div style="background:#fff;border-radius:20px;overflow:hidden">
+<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;padding:14px 20px;border-bottom:1px solid var(--color-divider)"><div style="display:flex;gap:6px;flex-wrap:wrap"><span style="font-size:12px;font-weight:700;padding:5px 10px;border-radius:999px;background:var(--color-text);color:#fff">Todos 18</span><span style="font-size:12px;padding:5px 10px;border-radius:999px;border:1.5px solid var(--color-neutral-300)">Asistieron 14</span><span style="font-size:12px;padding:5px 10px;border-radius:999px;border:1.5px solid var(--color-neutral-300)">Faltan 3</span><span style="font-size:12px;padding:5px 10px;border-radius:999px;border:1.5px solid var(--color-neutral-300)">Sin inscripción 1</span></div><span style="font-size:12px;font-weight:700;color:var(--ev-700)">Marcar a mano</span></div>
+<sc-for list="{{ attendees }}" as="p" hint-placeholder-count="9">
+<div style="display:grid;grid-template-columns:minmax(0,1fr) 140px 120px;gap:12px;padding:11px 20px;border-bottom:1px solid var(--color-divider);align-items:center"><div style="min-width:0"><div style="font-size:14px;font-weight:700">{{ p.n }}</div><div style="font-size:12px;color:var(--color-neutral-700)">{{ p.perfil }}</div></div><span style="font-size:13px;color:var(--color-neutral-700)">{{ p.via }}</span><span style="font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px;background:{{ p.bg }};color:{{ p.fg }};justify-self:start">{{ p.st }}</span></div>
+</sc-for>
+</div>
+</div>
+</div>
+</main>
+</div></div>
+
+<div class="dv-opt" id="2b"><div class="dv-olabel"><a class="dv-oid" href="#2b">2b</a>Aviso: la actividad ya alcanzó su cupo</div>
+<div class="dv-card" style="width:1280px;height:820px;display:flex;position:relative">
+<dc-import name="SidebarV2" active="Participantes" style="width:232px;flex:none" hint-size="232px,820px"></dc-import>
+<main style="flex:1;min-width:0;display:flex;flex-direction:column">
+<div style="padding:28px 36px 20px;border-bottom:1px solid var(--color-divider)"><div style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;color:var(--color-neutral-700)">Participantes / ficha</div><h2 style="margin:4px 0 0">Karla Estrada Félix</h2></div>
+<div style="padding:24px 36px;display:grid;grid-template-columns:1fr 1fr;gap:16px">
+<sc-for list="{{ bloques }}" as="b" hint-placeholder-count="2">
+<div style="background:#fff;border-radius:20px;padding:18px 20px">
+<div style="font-size:12px;font-weight:700;margin-bottom:8px">{{ b.label }}</div>
+<sc-for list="{{ b.opts }}" as="o" hint-placeholder-count="2"><div style="padding:10px 12px;margin-bottom:6px;border-radius:12px;border:1.5px solid var(--color-divider);display:flex;justify-content:space-between;font-size:13px"><span>{{ o.n }}</span><span style="font-weight:700">{{ o.cupo }}</span></div></sc-for>
+</div>
+</sc-for>
+</div>
+</main>
+<div style="position:absolute;inset:0;background:rgba(27,31,43,.45);display:flex;align-items:center;justify-content:center">
+<div style="width:520px;background:#fff;border-radius:28px;box-shadow:0 24px 60px rgba(27,31,43,.3);padding:28px;display:flex;flex-direction:column;gap:18px">
+<div style="display:flex;gap:14px;align-items:flex-start"><span style="width:44px;height:44px;flex:none;border-radius:14px;background:#fdecea;color:#b3261e;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700">!</span><div style="display:flex;flex-direction:column;gap:4px"><h4 style="margin:0">Este taller ya está lleno</h4><p style="margin:0;font-size:14px;color:var(--color-neutral-700)"><b style="color:var(--color-text)">Tipografía experimental</b> alcanzó su cupo de 25 personas. Elige otra actividad del mismo horario para Karla.</p></div></div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<span style="font-size:12px;font-weight:700;color:var(--color-neutral-700)">Disponibles · Mar 27 · 12:00–14:00</span>
+<div style="padding:14px 16px;border-radius:16px;border:1.5px solid var(--ev);background:var(--ev-100);display:grid;grid-template-columns:18px 1fr auto;gap:12px;align-items:center"><span style="width:16px;height:16px;border-radius:50%;border:2px solid var(--ev);background:var(--ev);box-shadow:inset 0 0 0 3px #fff"></span><div><div style="font-size:14px;font-weight:700">Serigrafía básica</div><div style="font-size:12px;color:var(--color-neutral-700)">Ana Valenzuela · Taller de gráfica</div></div><span style="font-size:12px;font-weight:700;color:var(--af-green)">3 lugares</span></div>
+<div style="padding:14px 16px;border-radius:16px;border:1.5px solid var(--color-divider);display:grid;grid-template-columns:18px 1fr auto;gap:12px;align-items:center;opacity:.5"><span style="width:16px;height:16px;border-radius:50%;border:2px solid var(--color-neutral-400)"></span><div><div style="font-size:14px;font-weight:700">Tipografía experimental</div><div style="font-size:12px;color:var(--color-neutral-700)">Diego Arvizu · Lab. 3</div></div><span style="font-size:12px;font-weight:700;color:#b3261e">Lleno 25/25</span></div>
+</div>
+<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding-top:4px"><span style="font-size:13px;color:var(--ev-700);font-weight:600;cursor:pointer">Agregar a lista de espera</span><div style="display:flex;gap:8px"><button style="border-radius:12px;background:transparent;border:1.5px solid var(--color-neutral-300);padding:11px 16px;font:700 14px/1.2 var(--font-heading);cursor:pointer">Cancelar</button><button style="border-radius:12px;background:var(--ev);color:#fff;border:1.5px solid var(--ev);padding:11px 16px;font:700 14px/1.2 var(--font-heading);cursor:pointer">Elegir Serigrafía</button></div></div>
+</div>
+</div>
+</div></div>
+
+<div class="dv-opt" id="2c"><div class="dv-olabel"><a class="dv-oid" href="#2c">2c</a>Asistente escanea el QR — confirmar</div>
+<div class="dv-card" style="width:390px;height:844px;display:flex;flex-direction:column;border:8px solid #1b1f2b;border-radius:44px;overflow:hidden;background:var(--color-bg)">
+<div style="background:var(--ev);color:#fff;padding:16px 20px 24px;border-radius:0 0 28px 28px;display:flex;flex-direction:column;gap:10px">
+<div style="display:flex;justify-content:space-between;font-size:12px;font-weight:600"><span>9:41</span><span>Asistencia</span></div>
+<span style="font-size:12px;font-weight:600;opacity:.9;margin-top:6px">Taller · Mar 27 · 12:00–14:00</span>
+<div style="font-size:26px;font-weight:700;line-height:1.05">Serigrafía básica</div>
+<span style="font-size:13px">Taller de gráfica · Ana Valenzuela</span>
+</div>
+<div style="padding:24px 20px;display:flex;flex-direction:column;gap:14px;flex:1">
+<h4 style="margin:0">Registra tu asistencia</h4>
+<p style="margin:0;font-size:14px;color:var(--color-neutral-700)">Usa el correo con el que te inscribiste al evento.</p>
+<div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:12px;font-weight:600">Correo</label><div style="border:1.5px solid var(--ev);border-radius:12px;background:#fff;padding:13px 12px;font-size:15px;min-height:48px">karla.estrada@potros.itson.edu.mx</div></div>
+<button style="border-radius:14px;background:var(--ev);color:#fff;border:0;padding:16px;font:700 15px/1.2 var(--font-heading);cursor:pointer">Confirmar asistencia</button>
+<div style="margin-top:auto;background:#fff;border-radius:20px;padding:18px;display:flex;gap:14px;align-items:center"><span style="width:44px;height:44px;flex:none;border-radius:50%;background:var(--af-green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700">✓</span><div><div style="font-size:15px;font-weight:700">¡Listo, Karla!</div><div style="font-size:13px;color:var(--color-neutral-700)">Asistencia registrada a las 12:04. Ya cuenta para tu constancia.</div></div></div>
+</div>
+</div></div>
+
+</div>
+<p class="dv-next">Siguientes pasos: "agrega el QR de entrada general al evento" · "muestra el cartel descargado" · "lista de espera cuando el taller está lleno"</p>
+</section>
+<section class="dv-turn" id="t1">
+<div class="dv-thd"><a class="dv-tid" href="#t1">1</a><span class="dv-tname">Aforo v2 — esquinas redondeadas, líneas finas, tarjetas blancas · ejemplo: Jornadas de Diseño AD 2026</span></div>
+<p style="font:12px/1.5 system-ui,sans-serif;color:rgba(0,0,0,.6);max-width:760px;margin:0">Supuestos: la plataforma usa el azul de Aforo con detalles morados y verdes; al entrar a un evento, toda la interfaz adopta la paleta del evento (aquí Cobalto — cámbiala en Tweaks). Los participantes pueden registrarse por un formulario público; el administrador completa paquete, abonos y talleres.</p>
+
+<div class="dv-grp">A · Acceso y eventos</div>
+<div class="dv-opts">
+
+<div class="dv-opt" id="1a"><div class="dv-olabel"><a class="dv-oid" href="#1a">1a</a>Iniciar sesión / crear cuenta</div>
+<div class="dv-card" style="width:1280px;height:800px;display:grid;grid-template-columns:1fr 1fr">
+<div style="background:var(--af);color:#fff;padding:48px;margin:16px;border-radius:32px;display:flex;flex-direction:column;justify-content:space-between">
+<div style="display:flex;align-items:center;gap:12px"><div style="box-shadow:0 0 0 2px #fff;border-radius:12px"><div style="width:52px;height:52px;overflow:hidden;flex:none;border-radius:11px"><img src="assets/aforo-logo.png" alt="Aforo" style="width:126%;max-width:none;margin:-13%;display:block"></div></div><span style="font-weight:700;font-size:22px">Aforo</span></div>
+<div><div style="display:flex;gap:6px;margin-bottom:28px"><span style="width:56px;height:8px;border-radius:99px;background:var(--af-purple)"></span><span style="width:56px;height:8px;border-radius:99px;background:var(--af-green)"></span><span style="width:56px;height:8px;border-radius:99px;background:#fff"></span></div><div style="font-weight:700;font-size:76px;line-height:.95;letter-spacing:-0.03em">Registra.<br>Organiza.<br><span style="color:var(--af-green-200)">Cobra.</span><br><span style="color:var(--af-purple-200)">Recibe.</span></div><p style="font-size:17px;max-width:420px;margin:24px 0 0">Eventos escolares con programa, participantes, paquetes y pagos en un solo lugar.</p></div>
+<div style="font-size:13px;display:flex;gap:24px"><span>ITSON · 2026</span><span>Ayuda</span></div>
+</div>
+<div style="padding:48px 72px;display:flex;flex-direction:column;justify-content:center;gap:28px">
+<div style="display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--color-divider)">
+<div style="padding:12px 0;font-weight:700;font-size:15px;border-bottom:3px solid var(--color-text);margin-bottom:-2px">Iniciar sesión</div>
+<div style="padding:12px 0;font-size:15px;color:var(--color-neutral-700)">Crear cuenta</div>
+</div>
+<h2 style="margin:0">Bienvenida de nuevo</h2>
+<div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:12px;font-weight:600">Correo electrónico</label><div style="border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden;background:#fff;padding:12px;font-size:15px">andrea.molina@potros.itson.edu.mx</div></div>
+<div style="display:flex;flex-direction:column;gap:6px"><div style="display:flex;justify-content:space-between"><label style="font-size:12px;font-weight:600">Contraseña</label><span style="font-size:12px;color:var(--af-700)">¿La olvidaste?</span></div><div style="border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden;background:#fff;padding:12px;font-size:15px;letter-spacing:.2em">••••••••••</div></div>
+<button style="border-radius:12px;background:var(--af);color:#fff;border:0;padding:14px 16px;font:700 15px/1.2 var(--font-heading);text-align:left;cursor:pointer" style-hover="background:var(--af-700)">Entrar →</button>
+<p style="font-size:13px;color:var(--color-neutral-700);margin:0">¿Te invitaron como administrador? Entra con el correo y la contraseña temporal que recibiste; te pediremos cambiarla.</p>
+</div>
+</div></div>
+
+<div class="dv-opt" id="1b"><div class="dv-olabel"><a class="dv-oid" href="#1b">1b</a>Mis eventos</div>
+<div class="dv-card" style="width:1280px;height:800px;display:flex;flex-direction:column">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:16px 36px;border-bottom:1px solid var(--color-divider)"><div style="display:flex;align-items:center;gap:10px"><div style="width:28px;height:28px;overflow:hidden;flex:none;border-radius:6px"><img src="assets/aforo-logo.png" alt="Aforo" style="width:126%;max-width:none;margin:-13%;display:block"></div><span style="font-weight:700;font-size:18px">Aforo</span></div><div style="display:flex;gap:28px;font-size:14px"><span style="font-weight:700">Mis eventos</span><span>Andrea Molina</span></div></div>
+<div style="padding:36px;display:flex;justify-content:space-between;align-items:flex-end;border-bottom:1px solid var(--color-divider)"><div><div style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;color:var(--color-neutral-700)">3 eventos</div><h1 style="margin:4px 0 0">Mis eventos</h1></div><button style="border-radius:12px;background:var(--af);color:#fff;border:0;padding:12px 16px;min-width:180px;font:700 14px/1.2 var(--font-heading);text-align:left;cursor:pointer">+ Nuevo evento</button></div>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;padding:28px 36px 36px;flex:1">
+<sc-for list="{{ events }}" as="e" hint-placeholder-count="3">
+<div style="background:#fff;border-radius:24px;overflow:hidden;display:flex;flex-direction:column;cursor:pointer;transition:box-shadow .2s" style-hover="box-shadow:0 10px 30px rgba(27,31,43,.10)">
+<div style="height:200px;background:{{ e.color }};padding:20px;display:flex;flex-direction:column;justify-content:space-between;color:#fff"><div style="width:52px;height:52px;border:2px solid #fff;border-radius:14px;display:flex;align-items:flex-end;padding:6px;border-radius:12px;font-weight:700">{{ e.mono }}</div><div style="font-size:13px;font-weight:600">{{ e.dates }}</div></div>
+<div style="padding:24px;display:flex;flex-direction:column;gap:10px;flex:1">
+<div style="display:flex;gap:8px"><span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden">{{ e.status }}</span><span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;background:var(--color-neutral-200)">{{ e.role }}</span></div>
+<h3 style="margin:0">{{ e.name }}</h3>
+<p style="font-size:14px;color:var(--color-neutral-700);margin:0">{{ e.desc }}</p>
+<div style="margin-top:auto;padding-top:16px;border-top:1px solid var(--color-divider);font-size:13px;display:flex;justify-content:space-between"><span>{{ e.count }}</span><span style="font-weight:700">Abrir →</span></div>
+</div>
+</div>
+</sc-for>
+</div>
+</div></div>
+
+<div class="dv-opt" id="1c"><div class="dv-olabel"><a class="dv-oid" href="#1c">1c</a>Crear evento — datos, logo, paleta, fechas y horarios</div>
+<div class="dv-card" style="width:1280px;height:900px;display:flex;flex-direction:column">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:16px 36px;border-bottom:1px solid var(--color-divider)"><div style="display:flex;align-items:center;gap:10px"><div style="width:28px;height:28px;overflow:hidden;flex:none;border-radius:6px"><img src="assets/aforo-logo.png" alt="Aforo" style="width:126%;max-width:none;margin:-13%;display:block"></div><span style="font-weight:700;font-size:18px">Aforo</span></div><div style="display:flex;gap:12px"><button style="border-radius:12px;background:transparent;border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden;padding:10px 16px;font:700 14px/1.2 var(--font-heading);text-align:left;cursor:pointer">Guardar borrador</button><button style="border-radius:12px;background:var(--ev);color:#fff;border:1.5px solid var(--ev);border-radius:12px;padding:10px 16px;min-width:200px;font:700 14px/1.2 var(--font-heading);text-align:left;cursor:pointer">Siguiente: paquetes →</button></div></div>
+<div style="display:grid;grid-template-columns:repeat(5,1fr);border-bottom:1px solid var(--color-divider)">
+<sc-for list="{{ steps }}" as="s" hint-placeholder-count="5">
+<sc-if value="{{ s.on }}" hint-placeholder-val="{{ false }}"><div style="padding:14px 36px;border-bottom:3px solid var(--ev);margin-bottom:-2px;font-size:13px;font-weight:700;display:flex;gap:10px"><span style="color:var(--ev)">{{ s.n }}</span>{{ s.label }}</div></sc-if>
+<sc-if value="{{ s.off }}" hint-placeholder-val="{{ true }}"><div style="padding:14px 36px;font-size:13px;color:var(--color-neutral-700);display:flex;gap:10px"><span>{{ s.n }}</span>{{ s.label }}</div></sc-if>
+</sc-for>
+</div>
+<div style="display:grid;grid-template-columns:1.15fr 1fr 1fr;flex:1">
+<div style="padding:32px 36px;border-right:1px solid var(--color-divider);display:flex;flex-direction:column;gap:20px">
+<h4 style="margin:0">1 · Datos generales</h4>
+<div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:12px;font-weight:600">Nombre del evento</label><div style="border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden;background:#fff;padding:12px;font-size:15px">Jornadas de Diseño AD 2026</div></div>
+<div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:12px;font-weight:600">Descripción</label><div style="border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden;background:#fff;padding:12px;font-size:14px;line-height:1.5;min-height:120px">Cuatro días de conferencias, talleres y muestra de proyectos organizados por la Academia de Diseño. Abierto a estudiantes, docentes y público externo.</div></div>
+<div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:12px;font-weight:600">Logo</label>
+<div style="display:flex;gap:16px;align-items:stretch"><div style="width:120px;height:120px;flex:none;background:repeating-linear-gradient(45deg,var(--color-neutral-200) 0 6px,var(--color-neutral-100) 6px 12px);border:1.5px dashed var(--color-neutral-400);border-radius:20px;display:flex;align-items:center;justify-content:center;font:11px ui-monospace,Menlo,monospace;color:var(--color-neutral-700);text-align:center;padding:8px">logo del evento<br>PNG / SVG</div>
+<div style="display:flex;flex-direction:column;justify-content:center;gap:8px;font-size:13px;color:var(--color-neutral-700)"><span>Arrastra el archivo o</span><button style="border-radius:12px;background:transparent;border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden;padding:8px 14px;font:700 13px/1.2 var(--font-heading);text-align:left;cursor:pointer;align-self:flex-start">Subir logo</button><span>Cuadrado, mínimo 512 px</span></div></div></div>
+<div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:12px;font-weight:600">Sede principal</label><div style="border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden;background:#fff;padding:12px;font-size:15px">ITSON Campus Náinari, Cd. Obregón</div></div>
+</div>
+<div style="padding:32px 36px;border-right:1px solid var(--color-divider);display:flex;flex-direction:column;gap:20px">
+<h4 style="margin:0">2 · Paleta de colores</h4>
+<p style="font-size:13px;color:var(--color-neutral-700);margin:0">Tiñe el panel del evento, el formulario público y el itinerario.</p>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+<sc-for list="{{ palettes }}" as="p" hint-placeholder-count="6">
+<div style="border:{{ p.border }};border-radius:16px;padding:10px;display:flex;flex-direction:column;gap:8px;background:#fff;cursor:pointer"><div style="display:flex;height:36px;border-radius:10px;overflow:hidden"><div style="flex:2;background:{{ p.a }}"></div><div style="flex:1;background:{{ p.b }}"></div><div style="flex:1;background:{{ p.c }}"></div></div><div style="font-size:13px;font-weight:{{ p.fw }};display:flex;justify-content:space-between"><span>{{ p.name }}</span><span>{{ p.mark }}</span></div></div>
+</sc-for>
+</div>
+<div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:12px;font-weight:600">Personalizada (HEX)</label><div style="display:flex;gap:8px"><div style="flex:1;border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden;background:#fff;padding:10px 12px;font-size:14px;display:flex;gap:8px;align-items:center"><span style="width:16px;height:16px;border-radius:50%;background:var(--ev)"></span>Principal</div><div style="flex:1;border:1.5px solid var(--color-neutral-300);border-radius:999px;background:#fff;padding:10px 12px;font-size:14px;color:var(--color-neutral-600)">Secundario</div></div></div>
+<div style="margin-top:auto;border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden"><div style="background:var(--ev);color:#fff;padding:14px;display:flex;gap:10px;align-items:center"><div style="width:32px;height:32px;border:2px solid #fff;border-radius:14px;display:flex;align-items:flex-end;padding:3px;border-radius:12px;font-weight:700;font-size:11px">AD</div><span style="font-weight:700;font-size:14px">Vista previa</span></div><div style="padding:12px 14px;display:flex;gap:8px;background:#fff"><span style="background:var(--ev);color:#fff;padding:4px 8px;font-size:12px;font-weight:700">Conferencia</span><span style="background:var(--ev-100);color:var(--ev-800);border:1.5px solid var(--ev);border-radius:12px;padding:2px 8px;font-size:12px;font-weight:700">Taller</span></div></div>
+</div>
+<div style="padding:32px 36px;display:flex;flex-direction:column;gap:20px">
+<h4 style="margin:0">3 · Fechas y horarios</h4>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+<div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:12px;font-weight:600">Inicia</label><div style="border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden;background:#fff;padding:12px;font-size:15px">27/10/2026</div></div>
+<div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:12px;font-weight:600">Termina</label><div style="border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden;background:#fff;padding:12px;font-size:15px">30/10/2026</div></div>
+</div>
+<div style="display:flex;flex-direction:column"><label style="font-size:12px;font-weight:600;margin-bottom:6px">Horario por día</label>
+<sc-for list="{{ hours4 }}" as="h" hint-placeholder-count="4">
+<div style="display:grid;grid-template-columns:1fr 84px 84px;gap:8px;align-items:center;padding:8px 0;border-top:1px solid var(--color-divider)"><span style="font-size:14px;font-weight:600">{{ h.d }}</span><div style="border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden;background:#fff;padding:6px 8px;font-size:14px">{{ h.a }}</div><div style="border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden;background:#fff;padding:6px 8px;font-size:14px">{{ h.b }}</div></div>
+</sc-for>
+</div>
+<div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:12px;font-weight:600">Registro público</label><div style="display:flex;border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden"><div style="flex:1;padding:10px;background:var(--color-text);color:#fff;font-size:13px;font-weight:700">Abierto</div><div style="flex:1;padding:10px;font-size:13px;background:#fff">Cerrado</div></div><span style="font-size:12px;color:var(--color-neutral-700)">Cierra el 25/10/2026 a las 23:59</span></div>
+</div>
+</div>
+</div></div>
+</div>
+
+<div class="dv-grp">B · Administración del evento</div>
+<div class="dv-opts">
+
+<div class="dv-opt" id="1d"><div class="dv-olabel"><a class="dv-oid" href="#1d">1d</a>Resumen del evento</div>
+<div class="dv-card" style="width:1280px;min-height:820px;display:flex">
+<dc-import name="SidebarV2" active="Resumen" style="width:232px;flex:none" hint-size="232px,820px"></dc-import>
+<main style="flex:1;min-width:0;display:flex;flex-direction:column">
+<div style="padding:28px 36px 20px;border-bottom:1px solid var(--color-divider);display:flex;justify-content:space-between;align-items:flex-end"><div><div style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;color:var(--color-neutral-700)">Faltan 9 días</div><h2 style="margin:4px 0 0">Resumen</h2></div><div style="display:flex;gap:8px"><button style="border-radius:12px;background:transparent;border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden;padding:10px 16px;font:700 14px/1.2 var(--font-heading);text-align:left;cursor:pointer">Copiar enlace de registro</button><button style="border-radius:12px;background:var(--ev);color:#fff;border:1.5px solid var(--ev);border-radius:12px;padding:10px 16px;min-width:160px;font:700 14px/1.2 var(--font-heading);text-align:left;cursor:pointer">+ Agregar persona</button></div></div>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;padding:24px 36px 0">
+<sc-for list="{{ stats }}" as="s" hint-placeholder-count="4">
+<div style="padding:22px 24px;background:#fff;border-radius:20px;display:flex;flex-direction:column;gap:6px"><span style="font-size:12px;font-weight:600;color:var(--color-neutral-700)">{{ s.k }}</span><span style="font-size:40px;font-weight:700;line-height:1;letter-spacing:-0.02em">{{ s.v }}</span><span style="font-size:13px;color:var(--color-neutral-700)">{{ s.sub }}</span><div style="height:6px;border-radius:99px;overflow:hidden;background:var(--color-neutral-200);margin-top:6px"><div style="height:6px;border-radius:99px;width:{{ s.pct }}%;background:var(--ev)"></div></div></div>
+</sc-for>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:16px 36px 36px;flex:1;align-items:start">
+<div style="padding:24px 28px;background:#fff;border-radius:20px">
+<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px"><h5 style="margin:0">Martes 27 · primer día</h5><span style="font-size:13px;color:var(--ev-700);font-weight:600">Ver itinerario →</span></div>
+<sc-for list="{{ day0 }}" as="a" hint-placeholder-count="6">
+<div style="display:grid;grid-template-columns:96px 1fr auto;gap:12px;padding:10px 0;border-top:1px solid var(--color-divider);align-items:baseline"><span style="font-size:13px;font-weight:600">{{ a.time }}</span><div><div style="font-size:14px;font-weight:700">{{ a.n }}</div><div style="font-size:12px;color:var(--color-neutral-700)">{{ a.r }}</div></div><span style="font-size:11px;font-weight:700;padding:3px 7px;background:{{ a.bg }};color:{{ a.fg }};border-radius:999px;border:1.5px solid {{ a.bd }}">{{ a.t }}</span></div>
+</sc-for>
+</div>
+<div style="padding:24px 28px;background:#fff;border-radius:20px;display:flex;flex-direction:column;gap:24px">
+<div><h5 style="margin:0 0 12px">Cupo de talleres</h5>
+<sc-for list="{{ talleres }}" as="w" hint-placeholder-count="8">
+<div style="display:grid;grid-template-columns:1fr 160px 52px;gap:12px;align-items:center;padding:6px 0"><span style="font-size:13px">{{ w.n }}</span><div style="height:8px;border-radius:99px;overflow:hidden;background:var(--color-neutral-200)"><div style="height:8px;border-radius:99px;width:{{ w.pct }}%;background:{{ w.bar }}"></div></div><span style="font-size:12px;font-weight:600;text-align:right">{{ w.cupo }}</span></div>
+</sc-for>
+</div>
+<div><h5 style="margin:0 0 12px">Perfil de participantes</h5>
+<div style="display:grid;grid-template-columns:repeat(5,1fr);border-top:1px solid var(--color-divider)">
+<sc-for list="{{ perfiles }}" as="p" hint-placeholder-count="5"><div style="padding:10px 10px 0 0;display:flex;flex-direction:column"><span style="font-size:24px;font-weight:700">{{ p.v }}</span><span style="font-size:12px;color:var(--color-neutral-700)">{{ p.k }}</span></div></sc-for>
+</div></div>
+</div>
+</div>
+</main>
+</div></div>
+
+<div class="dv-opt" id="1e"><div class="dv-olabel"><a class="dv-oid" href="#1e">1e</a>Administradores del evento</div>
+<div class="dv-card" style="width:1280px;min-height:820px;display:flex">
+<dc-import name="SidebarV2" active="Administradores" style="width:232px;flex:none" hint-size="232px,820px"></dc-import>
+<main style="flex:1;min-width:0;display:grid;grid-template-columns:1fr 360px">
+<div style="display:flex;flex-direction:column">
+<div style="padding:28px 36px 20px;border-bottom:1px solid var(--color-divider)"><div style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;color:var(--color-neutral-700)">Acceso al panel</div><h2 style="margin:4px 0 0">Administradores</h2></div>
+<div style="display:grid;grid-template-columns:1.4fr 1fr 1fr 100px;gap:12px;padding:12px 36px;font-size:12px;font-weight:700;border-bottom:1px solid var(--color-neutral-300)"><span>Nombre y correo</span><span>Permiso</span><span>Último acceso</span><span></span></div>
+<sc-for list="{{ admins }}" as="a" hint-placeholder-count="3">
+<div style="display:grid;grid-template-columns:1.4fr 1fr 1fr 100px;gap:12px;padding:16px 36px;border-bottom:1px solid var(--color-divider);align-items:center"><div><div style="font-size:14px;font-weight:700">{{ a.n }}</div><div style="font-size:12px;color:var(--color-neutral-700)">{{ a.e }}</div></div><div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:14px">{{ a.p }}</span><span style="font-size:12px;color:var(--color-neutral-700)">{{ a.role }}</span></div><span style="font-size:14px">{{ a.last }}</span><span style="font-size:13px;color:var(--color-neutral-700)">{{ a.act }}</span></div>
+</sc-for>
+<p style="padding:20px 36px;font-size:13px;color:var(--color-neutral-700);max-width:620px;margin:0">Cada administrador entra con su propio correo y contraseña. Solo la creadora puede eliminar el evento o quitar administradores.</p>
+</div>
+<aside style="border-left:1px solid var(--color-divider);padding:28px;display:flex;flex-direction:column;gap:18px;background:#fff;margin:16px;border-radius:24px;border-left:0">
+<h4 style="margin:0">Invitar administrador</h4>
+<div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:12px;font-weight:600">Nombre</label><div style="border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden;background:#fff;padding:12px;font-size:15px">Mtra. Paula Ibarra</div></div>
+<div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:12px;font-weight:600">Correo</label><div style="border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden;background:#fff;padding:12px;font-size:15px">paula.ibarra@itson.edu.mx</div></div>
+<div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:12px;font-weight:600">Contraseña temporal</label><div style="display:flex;gap:8px"><div style="flex:1;border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden;background:#fff;padding:12px;font-size:15px;font-family:ui-monospace,Menlo,monospace">K7m-qa4-Lz9</div><button style="border-radius:12px;background:transparent;border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden;padding:0 12px;font:700 13px var(--font-heading);cursor:pointer">Generar</button></div></div>
+<div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:12px;font-weight:600">Permiso</label>
+<div style="display:flex;flex-direction:column;border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden;background:#fff">
+<div style="padding:12px;display:flex;gap:10px;border-bottom:1px solid var(--color-divider)"><span style="width:16px;height:16px;flex:none;border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden;background:var(--ev);box-shadow:inset 0 0 0 3px #fff;border-radius:50%"></span><div><div style="font-size:14px;font-weight:700">Acceso completo</div><div style="font-size:12px;color:var(--color-neutral-700)">Programa, personas, paquetes y pagos</div></div></div>
+<div style="padding:12px;display:flex;gap:10px"><span style="width:16px;height:16px;flex:none;border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden;border-radius:50%"></span><div><div style="font-size:14px">Registro y pagos</div><div style="font-size:12px;color:var(--color-neutral-700)">No edita el programa ni la paleta</div></div></div>
+</div></div>
+<button style="border-radius:12px;background:var(--ev);color:#fff;border:1.5px solid var(--ev);border-radius:12px;padding:12px 16px;font:700 14px/1.2 var(--font-heading);text-align:left;cursor:pointer">Enviar invitación por correo</button>
+</aside>
+</main>
+</div></div>
+
+<div class="dv-opt" id="1f"><div class="dv-olabel"><a class="dv-oid" href="#1f">1f</a>Paquetes</div>
+<div class="dv-card" style="width:1280px;min-height:820px;display:flex">
+<dc-import name="SidebarV2" active="Paquetes" style="width:232px;flex:none" hint-size="232px,820px"></dc-import>
+<main style="flex:1;min-width:0;display:flex;flex-direction:column">
+<div style="padding:28px 36px 20px;border-bottom:1px solid var(--color-divider);display:flex;justify-content:space-between;align-items:flex-end"><div><div style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;color:var(--color-neutral-700)">162 vendidos · $132,350 esperados</div><h2 style="margin:4px 0 0">Paquetes</h2></div><button style="border-radius:12px;background:var(--ev);color:#fff;border:1.5px solid var(--ev);border-radius:12px;padding:10px 16px;min-width:160px;font:700 14px/1.2 var(--font-heading);text-align:left;cursor:pointer">+ Nuevo paquete</button></div>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;padding:28px 36px 36px;flex:1">
+<sc-for list="{{ packages }}" as="p" hint-placeholder-count="4">
+<div style="background:#fff;border-radius:24px;padding:28px;display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;justify-content:space-between;align-items:baseline"><h3 style="margin:0">{{ p.n }}</h3><span style="font-size:12px;color:var(--color-neutral-700)">Editar</span></div>
+<div style="font-size:44px;font-weight:700;line-height:1;letter-spacing:-0.02em;color:var(--ev)">{{ p.price }}</div>
+<p style="font-size:13px;color:var(--color-neutral-700);margin:0">{{ p.desc }}</p>
+<div style="display:flex;flex-direction:column;border-top:1px solid var(--color-divider)">
+<sc-for list="{{ p.inc }}" as="i" hint-placeholder-count="4"><div style="padding:9px 0;border-bottom:1px solid var(--color-divider);font-size:14px;display:flex;gap:10px"><span style="width:8px;height:8px;border-radius:50%;background:var(--ev);margin-top:7px;flex:none"></span>{{ i }}</div></sc-for>
+</div>
+<div style="margin-top:auto;display:flex;flex-direction:column;gap:6px"><div style="display:flex;justify-content:space-between;font-size:13px"><span>Vendidos</span><span style="font-weight:700">{{ p.sold }}</span></div><div style="height:6px;border-radius:99px;overflow:hidden;background:var(--color-neutral-200)"><div style="height:6px;border-radius:99px;width:{{ p.pct }}%;background:var(--ev)"></div></div><span style="font-size:12px;color:var(--color-neutral-700)">{{ p.total }} esperados</span></div>
+</div>
+</sc-for>
+</div>
+</main>
+</div></div>
+</div>
+
+<div class="dv-grp">C · Programa: actividades e itinerario</div>
+<div class="dv-opts">
+
+<div class="dv-opt" id="1g"><div class="dv-olabel"><a class="dv-oid" href="#1g">1g</a>Actividades — alta de talleres, conferencias, conciertos, comidas…</div>
+<div class="dv-card" style="width:1280px;min-height:820px;display:flex">
+<dc-import name="SidebarV2" active="Programa" style="width:232px;flex:none" hint-size="232px,820px"></dc-import>
+<main style="flex:1;min-width:0;display:grid;grid-template-columns:1fr 340px">
+<div style="display:flex;flex-direction:column;min-width:0">
+<div style="padding:28px 36px 20px;border-bottom:1px solid var(--color-divider)"><div style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;color:var(--color-neutral-700)">20 actividades · 4 días</div><h2 style="margin:4px 0 0">Programa</h2></div>
+<div style="display:flex;gap:8px;padding:14px 36px;border-bottom:1px solid var(--color-divider);flex-wrap:wrap">
+<sc-for list="{{ typeChips }}" as="c" hint-placeholder-count="6"><span style="font-size:12px;font-weight:700;padding:5px 10px;background:{{ c.bg }};color:{{ c.fg }};border-radius:999px;border:1.5px solid {{ c.bd }}">{{ c.label }}</span></sc-for>
+</div>
+<div style="display:grid;grid-template-columns:64px 96px 1fr 150px 70px;gap:12px;padding:10px 36px;font-size:12px;font-weight:700;border-bottom:1px solid var(--color-neutral-300)"><span>Día</span><span>Horario</span><span>Actividad</span><span>Sede</span><span>Cupo</span></div>
+<sc-for list="{{ acts }}" as="a" hint-placeholder-count="12">
+<div style="display:grid;grid-template-columns:64px 96px 1fr 150px 70px;gap:12px;padding:9px 36px;border-bottom:1px solid var(--color-divider);align-items:center"><span style="font-size:13px;font-weight:600">{{ a.day }}</span><span style="font-size:13px">{{ a.time }}</span><div style="display:flex;gap:10px;align-items:center;min-width:0"><span style="font-size:10px;font-weight:700;padding:2px 6px;background:{{ a.bg }};color:{{ a.fg }};border-radius:999px;border:1.5px solid {{ a.bd }};flex:none">{{ a.t }}</span><div style="min-width:0"><div style="font-size:14px;font-weight:700">{{ a.n }}</div><div style="font-size:12px;color:var(--color-neutral-700)">{{ a.p }}</div></div><span style="font-size:11px;color:var(--ev-700);font-weight:600">{{ a.simulTag }}</span></div><span style="font-size:13px">{{ a.r }}</span><span style="font-size:13px;font-weight:600;color:{{ a.cupoColor }}">{{ a.cupo }}</span></div>
+</sc-for>
+</div>
+<aside style="border-left:1px solid var(--color-divider);padding:28px;display:flex;flex-direction:column;gap:16px;background:#fff;margin:16px;border-radius:24px;border-left:0">
+<h4 style="margin:0">Nueva actividad</h4>
+<div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:12px;font-weight:600">Tipo</label><div style="display:grid;grid-template-columns:repeat(3,1fr);border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden;background:#fff"><span style="padding:8px;font-size:13px;font-weight:700;background:var(--color-text);color:#fff">Taller</span><span style="padding:8px;font-size:13px">Conferencia</span><span style="padding:8px;font-size:13px">Concierto</span><span style="padding:8px;font-size:13px;border-top:1px solid var(--color-divider)">Comida</span><span style="padding:8px;font-size:13px;border-top:1px solid var(--color-divider)">Ceremonia</span><span style="padding:8px;font-size:13px;border-top:1px solid var(--color-divider)">Otro…</span></div></div>
+<div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:12px;font-weight:600">Nombre</label><div style="border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden;background:#fff;padding:10px 12px;font-size:14px">Lettering con pincel</div></div>
+<div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:12px;font-weight:600">Tallerista</label><div style="border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden;background:#fff;padding:10px 12px;font-size:14px;display:flex;justify-content:space-between"><span>Ana Valenzuela</span><span>▾</span></div></div>
+<div style="display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:8px">
+<div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:12px;font-weight:600">Día</label><div style="border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden;background:#fff;padding:10px;font-size:14px">Jue 29</div></div>
+<div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:12px;font-weight:600">Inicio</label><div style="border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden;background:#fff;padding:10px;font-size:14px">11:30</div></div>
+<div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:12px;font-weight:600">Fin</label><div style="border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden;background:#fff;padding:10px;font-size:14px">13:30</div></div>
+</div>
+<div style="border:1.5px solid var(--ev);border-radius:12px;background:#fff;padding:10px 12px;font-size:12px;line-height:1.45"><b>Simultánea con 2 talleres:</b> Ilustración editorial y Risografía. Los participantes elegirán uno de este bloque.</div>
+<div style="display:grid;grid-template-columns:1.5fr 1fr;gap:8px">
+<div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:12px;font-weight:600">Sede</label><div style="border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden;background:#fff;padding:10px;font-size:14px">Lab. 5</div></div>
+<div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:12px;font-weight:600">Cupo</label><div style="border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden;background:#fff;padding:10px;font-size:14px">20</div></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:12px;font-weight:600">Incluido en paquetes</label><div style="display:flex;gap:6px;flex-wrap:wrap"><span style="font-size:12px;padding:4px 8px;border:1.5px solid var(--color-neutral-300);border-radius:999px;color:var(--color-neutral-600)">Básico</span><span style="font-size:12px;font-weight:700;padding:4px 8px;background:var(--ev);color:#fff;border:1.5px solid var(--ev);border-radius:12px">Completo</span><span style="font-size:12px;font-weight:700;padding:4px 8px;background:var(--ev);color:#fff;border:1.5px solid var(--ev);border-radius:12px">Total</span><span style="font-size:12px;font-weight:700;padding:4px 8px;background:var(--ev);color:#fff;border:1.5px solid var(--ev);border-radius:12px">Externo</span></div></div>
+<button style="border-radius:12px;background:var(--ev);color:#fff;border:1.5px solid var(--ev);border-radius:12px;padding:12px 16px;font:700 14px/1.2 var(--font-heading);text-align:left;cursor:pointer;margin-top:auto">Agregar al programa</button>
+</aside>
+</main>
+</div></div>
+
+<div class="dv-opt" id="1h"><div class="dv-olabel"><a class="dv-oid" href="#1h">1h</a>Itinerario — vista lista por día</div>
+<div class="dv-card" style="width:1280px;min-height:820px;display:flex">
+<dc-import name="SidebarV2" active="Calendario" style="width:232px;flex:none" hint-size="232px,820px"></dc-import>
+<main style="flex:1;min-width:0;display:flex;flex-direction:column">
+<div style="padding:28px 36px 20px;border-bottom:1px solid var(--color-divider);display:flex;justify-content:space-between;align-items:flex-end"><div><div style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;color:var(--color-neutral-700)">27–30 de octubre 2026</div><h2 style="margin:4px 0 0">Itinerario</h2></div>
+<div style="display:flex;border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden"><span style="padding:8px 14px;font-size:13px;font-weight:700;background:var(--ev);color:#fff">Itinerario</span><span style="padding:8px 14px;font-size:13px;border-left:1px solid var(--color-neutral-300)">Día</span><span style="padding:8px 14px;font-size:13px;border-left:1px solid var(--color-neutral-300)">Semana</span><span style="padding:8px 14px;font-size:13px;border-left:1px solid var(--color-neutral-300)">Mes</span></div></div>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding:24px 36px 36px;flex:1;align-items:start">
+<sc-for list="{{ weekDays }}" as="d" hint-placeholder-count="4">
+<div style="background:#fff;border-radius:20px;overflow:hidden;display:flex;flex-direction:column">
+<div style="padding:18px 20px;border-bottom:1px solid var(--color-divider)"><div style="font-size:32px;font-weight:700;line-height:1;color:var(--ev)">{{ d.num }}</div><div style="font-size:13px;font-weight:600;margin-top:4px">{{ d.name }}</div></div>
+<sc-for list="{{ d.blocks }}" as="a" hint-placeholder-count="5">
+<div style="padding:12px 20px;border-bottom:1px solid var(--color-divider);display:flex;flex-direction:column;gap:4px"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:12px;font-weight:600">{{ a.time }}</span><span style="font-size:10px;font-weight:700;padding:2px 6px;background:{{ a.bg }};color:{{ a.fg }};border-radius:999px;border:1.5px solid {{ a.bd }}">{{ a.t }}</span></div><div style="font-size:14px;font-weight:700;line-height:1.25">{{ a.n }}</div><div style="font-size:12px;color:var(--color-neutral-700)">{{ a.r }}</div><span style="font-size:11px;color:var(--ev-700);font-weight:600">{{ a.simulTag }}</span></div>
+</sc-for>
+</div>
+</sc-for>
+</div>
+</main>
+</div></div>
+
+<div class="dv-opt" id="1i"><div class="dv-olabel"><a class="dv-oid" href="#1i">1i</a>Calendario semanal — talleres simultáneos en carriles</div>
+<div class="dv-card" style="width:1280px;min-height:820px;display:flex">
+<dc-import name="SidebarV2" active="Calendario" style="width:232px;flex:none" hint-size="232px,820px"></dc-import>
+<main style="flex:1;min-width:0;display:flex;flex-direction:column">
+<div style="padding:28px 36px 20px;border-bottom:1px solid var(--color-divider);display:flex;justify-content:space-between;align-items:flex-end"><div><div style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;color:var(--color-neutral-700)">Semana 44 · 26 oct – 1 nov</div><h2 style="margin:4px 0 0">Calendario</h2></div>
+<div style="display:flex;border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden"><span style="padding:8px 14px;font-size:13px">Itinerario</span><span style="padding:8px 14px;font-size:13px;border-left:1px solid var(--color-neutral-300)">Día</span><span style="padding:8px 14px;font-size:13px;font-weight:700;background:var(--ev);color:#fff;border-left:1px solid var(--color-neutral-300)">Semana</span><span style="padding:8px 14px;font-size:13px;border-left:1px solid var(--color-neutral-300)">Mes</span></div></div>
+<div style="display:grid;grid-template-columns:56px repeat(4,1fr);border-bottom:1px solid var(--color-neutral-300)"><span></span>
+<sc-for list="{{ weekDays }}" as="d" hint-placeholder-count="4"><div style="padding:10px 12px;border-left:1px solid var(--color-divider);display:flex;gap:8px;align-items:baseline"><span style="font-size:22px;font-weight:700;color:var(--ev)">{{ d.num }}</span><span style="font-size:13px;font-weight:600">{{ d.short }}</span></div></sc-for>
+</div>
+<div style="display:grid;grid-template-columns:56px repeat(4,1fr);position:relative;height:576px;margin:0 16px 16px 0">
+<div style="position:relative">
+<sc-for list="{{ hourMarks }}" as="h" hint-placeholder-count="14"><span style="position:absolute;top:{{ h.top }}px;right:8px;font-size:11px;color:var(--color-neutral-700);transform:translateY(-50%)">{{ h.label }}</span></sc-for>
+</div>
+<sc-for list="{{ weekDays }}" as="d" hint-placeholder-count="4">
+<div style="position:relative;border-left:1px solid var(--color-divider);background:repeating-linear-gradient(to bottom,transparent 0 39px,var(--color-neutral-300) 39px 40px)">
+<sc-for list="{{ d.blocks }}" as="b" hint-placeholder-count="5">
+<div style="position:absolute;top:{{ b.top }}px;height:{{ b.h }}px;left:calc({{ b.left }}% + 3px);width:calc({{ b.w }}% - 6px);background:{{ b.bg }};color:{{ b.fg }};border-radius:10px;border:1.5px solid {{ b.bd }};padding:5px 7px;overflow:hidden;display:flex;flex-direction:column;gap:1px"><span style="font-size:10px;font-weight:600">{{ b.time }}</span><span style="font-size:11px;font-weight:700;line-height:1.15;overflow-wrap:anywhere;hyphens:auto" lang="es">{{ b.n }}</span><span style="font-size:10px">{{ b.cupoTxt }}</span></div>
+</sc-for>
+</div>
+</sc-for>
+</div>
+</main>
+</div></div>
+
+<div class="dv-opt" id="1j"><div class="dv-olabel"><a class="dv-oid" href="#1j">1j</a>Calendario mensual</div>
+<div class="dv-card" style="width:1280px;min-height:820px;display:flex">
+<dc-import name="SidebarV2" active="Calendario" style="width:232px;flex:none" hint-size="232px,820px"></dc-import>
+<main style="flex:1;min-width:0;display:flex;flex-direction:column">
+<div style="padding:28px 36px 20px;border-bottom:1px solid var(--color-divider);display:flex;justify-content:space-between;align-items:flex-end"><div><div style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;color:var(--color-neutral-700)">‹ 2026 ›</div><h2 style="margin:4px 0 0">Octubre</h2></div>
+<div style="display:flex;border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden"><span style="padding:8px 14px;font-size:13px">Itinerario</span><span style="padding:8px 14px;font-size:13px;border-left:1px solid var(--color-neutral-300)">Día</span><span style="padding:8px 14px;font-size:13px;border-left:1px solid var(--color-neutral-300)">Semana</span><span style="padding:8px 14px;font-size:13px;font-weight:700;background:var(--ev);color:#fff;border-left:1px solid var(--color-neutral-300)">Mes</span></div></div>
+<div style="display:grid;grid-template-columns:repeat(7,1fr);border-bottom:1px solid var(--color-neutral-300)">
+<sc-for list="{{ dow }}" as="w" hint-placeholder-count="7"><span style="padding:10px 12px;font-size:12px;font-weight:700">{{ w }}</span></sc-for>
+</div>
+<div style="display:grid;grid-template-columns:repeat(7,1fr);grid-auto-rows:minmax(118px,1fr);flex:1">
+<sc-for list="{{ monthCells }}" as="c" hint-placeholder-count="35">
+<div style="border-right:1px solid var(--color-divider);border-bottom:1px solid var(--color-divider);padding:8px;display:flex;flex-direction:column;gap:3px;background:{{ c.bg }}">
+<span style="font-size:14px;font-weight:{{ c.fw }};color:{{ c.color }}">{{ c.num }}</span>
+<sc-for list="{{ c.chips }}" as="k" hint-placeholder-count="0"><span style="font-size:10.5px;padding:2px 5px;background:{{ k.bg }};color:{{ k.fg }};border-radius:6px;border-left:3px solid {{ k.bd }};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ k.label }}</span></sc-for>
+<span style="font-size:11px;font-weight:600;color:var(--ev-700)">{{ c.more }}</span>
+</div>
+</sc-for>
+</div>
+</main>
+</div></div>
+</div>
+
+<div class="dv-grp">D · Personas y pagos</div>
+<div class="dv-opts">
+
+<div class="dv-opt" id="1k"><div class="dv-olabel"><a class="dv-oid" href="#1k">1k</a>Participantes y roles</div>
+<div class="dv-card" style="width:1280px;min-height:820px;display:flex">
+<dc-import name="SidebarV2" active="Participantes" style="width:232px;flex:none" hint-size="232px,820px"></dc-import>
+<main style="flex:1;min-width:0;display:flex;flex-direction:column">
+<div style="padding:28px 36px 20px;border-bottom:1px solid var(--color-divider);display:flex;justify-content:space-between;align-items:flex-end"><div><div style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;color:var(--color-neutral-700)">214 personas registradas</div><h2 style="margin:4px 0 0">Participantes</h2></div><div style="display:flex;gap:8px"><button style="border-radius:12px;background:transparent;border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden;padding:10px 16px;font:700 14px/1.2 var(--font-heading);text-align:left;cursor:pointer">Exportar CSV</button><button style="border-radius:12px;background:var(--ev);color:#fff;border:1.5px solid var(--ev);border-radius:12px;padding:10px 16px;min-width:160px;font:700 14px/1.2 var(--font-heading);text-align:left;cursor:pointer">+ Agregar persona</button></div></div>
+<div style="display:flex;justify-content:space-between;gap:16px;padding:14px 36px;border-bottom:1px solid var(--color-divider);align-items:center">
+<div style="display:flex;gap:6px;flex-wrap:wrap">
+<sc-for list="{{ roleChips }}" as="r" hint-placeholder-count="9"><span style="font-size:12px;font-weight:{{ r.fw }};padding:5px 9px;background:{{ r.bg }};color:{{ r.fg }};border-radius:999px;border:1.5px solid {{ r.bd }};display:flex;gap:6px"><span>{{ r.label }}</span><span style="opacity:.7">{{ r.n }}</span></span></sc-for>
+</div>
+<div style="border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden;background:#fff;padding:7px 10px;font-size:13px;width:220px;color:var(--color-neutral-600);flex:none">Buscar nombre o correo</div>
+</div>
+<div style="display:grid;grid-template-columns:1.6fr 120px 1.2fr 96px 90px 90px 104px;gap:12px;padding:10px 36px;font-size:12px;font-weight:700;border-bottom:1px solid var(--color-neutral-300)"><span>Nombre y correo</span><span>Rol</span><span>Perfil</span><span>Paquete</span><span>Total</span><span>Saldo</span><span>Estado</span></div>
+<sc-for list="{{ people }}" as="p" hint-placeholder-count="10">
+<div style="display:grid;grid-template-columns:1.6fr 120px 1.2fr 96px 90px 90px 104px;gap:12px;padding:11px 36px;border-bottom:1px solid var(--color-divider);align-items:center;background:{{ p.rowBg }}" style-hover="background:var(--ev-100)"><div style="min-width:0"><div style="font-size:14px;font-weight:700">{{ p.n }}</div><div style="font-size:12px;color:var(--color-neutral-700);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ p.e }}</div></div><span style="font-size:11px;font-weight:600;padding:3px 7px;border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden;justify-self:start">{{ p.rol }}</span><span style="font-size:13px">{{ p.perfil }}</span><span style="font-size:13px;font-weight:600">{{ p.pq }}</span><span style="font-size:13px">{{ p.totalTxt }}</span><span style="font-size:13px;font-weight:600">{{ p.saldoTxt }}</span><span style="font-size:11px;font-weight:700;padding:3px 7px;background:{{ p.stBg }};color:{{ p.stFg }};border-radius:999px;border:1.5px solid {{ p.stBd }};justify-self:start">{{ p.st }}</span></div>
+</sc-for>
+</main>
+</div></div>
+
+<div class="dv-opt" id="1l"><div class="dv-olabel"><a class="dv-oid" href="#1l">1l</a>Ficha de participante — perfil escolar, paquete, abonos y talleres simultáneos</div>
+<div class="dv-card" style="width:1440px;min-height:860px;display:flex">
+<dc-import name="SidebarV2" active="Participantes" style="width:232px;flex:none" hint-size="232px,860px"></dc-import>
+<main style="flex:1;min-width:0;display:flex;flex-direction:column">
+<div style="padding:28px 36px 20px;border-bottom:1px solid var(--color-divider);display:flex;justify-content:space-between;align-items:flex-end"><div><div style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;color:var(--color-neutral-700)">Participantes / ficha</div><h2 style="margin:4px 0 0">Karla Estrada Félix</h2></div><div style="display:flex;gap:8px"><button style="border-radius:12px;background:transparent;border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden;padding:10px 16px;font:700 14px/1.2 var(--font-heading);text-align:left;cursor:pointer">Enviar comprobante</button><button style="border-radius:12px;background:var(--ev);color:#fff;border:1.5px solid var(--ev);border-radius:12px;padding:10px 16px;min-width:140px;font:700 14px/1.2 var(--font-heading);text-align:left;cursor:pointer">Guardar</button></div></div>
+<div style="display:grid;grid-template-columns:1fr 1.15fr 1.15fr;flex:1">
+<div style="padding:28px 32px;border-right:1px solid var(--color-divider);display:flex;flex-direction:column;gap:18px">
+<h5 style="margin:0">Datos</h5>
+<div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:12px;font-weight:600">Nombre</label><div style="border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden;background:#fff;padding:10px 12px;font-size:14px">Karla Estrada Félix</div></div>
+<div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:12px;font-weight:600">Correo</label><div style="border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden;background:#fff;padding:10px 12px;font-size:14px">karla.estrada@potros.itson.edu.mx</div></div>
+<div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:12px;font-weight:600">Rol en el evento</label><div style="border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden;background:#fff;padding:10px 12px;font-size:14px;display:flex;justify-content:space-between"><span>Participante</span><span>▾</span></div></div>
+<div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:12px;font-weight:600">Descripción</label><div style="display:flex;flex-wrap:wrap;gap:6px">
+<sc-for list="{{ perfilOpts }}" as="o" hint-placeholder-count="5"><span style="font-size:13px;font-weight:{{ o.fw }};padding:6px 10px;background:{{ o.bg }};color:{{ o.fg }};border-radius:999px;border:1.5px solid {{ o.bd }}">{{ o.label }}</span></sc-for>
+</div></div>
+<div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:12px;font-weight:600">Carrera</label><div style="border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden;background:#fff;padding:10px 12px;font-size:14px;display:flex;justify-content:space-between"><span>Arquitectura</span><span>▾</span></div></div>
+<div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:12px;font-weight:600">Semestre</label><div style="display:grid;grid-template-columns:repeat(9,1fr);border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden;background:#fff">
+<sc-for list="{{ semestres }}" as="s" hint-placeholder-count="9"><span style="padding:8px 0;text-align:center;font-size:13px;font-weight:{{ s.fw }};background:{{ s.bg }};color:{{ s.fg }}">{{ s.n }}</span></sc-for>
+</div></div>
+</div>
+<div style="padding:28px 32px;border-right:1px solid var(--color-divider);display:flex;flex-direction:column;gap:18px">
+<h5 style="margin:0">Paquete</h5>
+<div style="display:flex;flex-direction:column;border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden;background:#fff">
+<sc-for list="{{ pkgOpts }}" as="o" hint-placeholder-count="4"><div style="padding:10px 12px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--color-divider);background:{{ o.bg }}"><div style="display:flex;gap:10px;align-items:center"><span style="width:16px;height:16px;border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden;border-radius:50%;background:{{ o.dot }};box-shadow:inset 0 0 0 3px #fff"></span><span style="font-size:14px;font-weight:{{ o.fw }}">{{ o.n }}</span></div><span style="font-size:14px;font-weight:700">{{ o.price }}</span></div></sc-for>
+</div>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--color-neutral-300);border-bottom:1px solid var(--color-divider)">
+<div style="padding:12px 0;display:flex;flex-direction:column"><span style="font-size:12px;color:var(--color-neutral-700)">A pagar</span><span style="font-size:24px;font-weight:700">$1,200</span></div>
+<div style="padding:12px 0;display:flex;flex-direction:column"><span style="font-size:12px;color:var(--color-neutral-700)">Abonado</span><span style="font-size:24px;font-weight:700">$600</span></div>
+<div style="padding:12px 0;display:flex;flex-direction:column"><span style="font-size:12px;color:var(--color-neutral-700)">Saldo</span><span style="font-size:24px;font-weight:700;color:var(--ev)">$600</span></div>
+</div>
+<div style="height:8px;border-radius:99px;overflow:hidden;background:var(--color-neutral-200);margin-top:-8px"><div style="height:8px;border-radius:99px;width:50%;background:var(--ev)"></div></div>
+<div><div style="display:grid;grid-template-columns:96px 1fr 80px;gap:8px;padding:8px 0;font-size:12px;font-weight:700;border-bottom:1px solid var(--color-neutral-300)"><span>Fecha</span><span>Método · recibió</span><span style="text-align:right">Monto</span></div>
+<sc-for list="{{ abonos }}" as="a" hint-placeholder-count="2"><div style="display:grid;grid-template-columns:96px 1fr 80px;gap:8px;padding:10px 0;border-bottom:1px solid var(--color-divider);font-size:13px"><span>{{ a.f }}</span><span>{{ a.m }}</span><span style="text-align:right;font-weight:700">{{ a.v }}</span></div></sc-for>
+<div style="display:grid;grid-template-columns:96px 1fr 80px;gap:8px;padding:10px 0;align-items:center"><div style="border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden;background:#fff;padding:6px;font-size:13px">18/10/2026</div><div style="border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden;background:#fff;padding:6px;font-size:13px;display:flex;justify-content:space-between"><span>Transferencia</span><span>▾</span></div><div style="border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden;background:#fff;padding:6px;font-size:13px;text-align:right">$0</div></div>
+<button style="border-radius:12px;background:transparent;border:1.5px solid var(--ev);border-radius:12px;color:var(--ev-700);padding:10px 14px;font:700 13px/1.2 var(--font-heading);text-align:left;cursor:pointer;width:100%">+ Registrar abono</button></div>
+<div style="display:flex;justify-content:space-between;font-size:13px;padding-top:4px"><span>Fecha de liquidación</span><span style="color:var(--color-neutral-700)">Se registra al saldar</span></div>
+</div>
+<div style="padding:28px 32px;display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;justify-content:space-between;align-items:baseline"><h5 style="margin:0">Talleres y conferencias</h5><span style="font-size:12px;font-weight:700;color:var(--ev-700)">3 de 3 talleres</span></div>
+<p style="font-size:13px;color:var(--color-neutral-700);margin:0">En bloques simultáneos elige una opción. Las conferencias del paquete se asignan solas.</p>
+<sc-for list="{{ bloques }}" as="b" hint-placeholder-count="3">
+<div style="display:flex;flex-direction:column;border-top:1px solid var(--color-neutral-300)">
+<div style="padding:8px 0;font-size:12px;font-weight:700;display:flex;justify-content:space-between"><span>{{ b.label }}</span><span style="color:var(--color-neutral-700);font-weight:600">{{ b.count }}</span></div>
+<sc-for list="{{ b.opts }}" as="o" hint-placeholder-count="2"><div style="display:grid;grid-template-columns:18px 1fr 64px;gap:10px;align-items:center;padding:8px 10px;margin-bottom:4px;background:{{ o.bg }};border-radius:999px;border:1.5px solid {{ o.bd }};opacity:{{ o.op }}"><span style="width:16px;height:16px;border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden;border-radius:50%;background:{{ o.dot }};box-shadow:inset 0 0 0 3px #fff"></span><div><div style="font-size:13px;font-weight:{{ o.fw }}">{{ o.n }}</div><div style="font-size:11px;color:var(--color-neutral-700)">{{ o.r }}</div></div><span style="font-size:11px;font-weight:700;text-align:right">{{ o.cupo }}</span></div></sc-for>
+</div>
+</sc-for>
+</div>
+</div>
+</main>
+</div></div>
+
+<div class="dv-opt" id="1m"><div class="dv-olabel"><a class="dv-oid" href="#1m">1m</a>Pagos y abonos</div>
+<div class="dv-card" style="width:1280px;min-height:820px;display:flex">
+<dc-import name="SidebarV2" active="Pagos" style="width:232px;flex:none" hint-size="232px,820px"></dc-import>
+<main style="flex:1;min-width:0;display:flex;flex-direction:column">
+<div style="padding:28px 36px 20px;border-bottom:1px solid var(--color-divider);display:flex;justify-content:space-between;align-items:flex-end"><div><div style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;color:var(--color-neutral-700)">Solo participantes con paquete</div><h2 style="margin:4px 0 0">Pagos</h2></div><button style="border-radius:12px;background:var(--ev);color:#fff;border:1.5px solid var(--ev);border-radius:12px;padding:10px 16px;min-width:160px;font:700 14px/1.2 var(--font-heading);text-align:left;cursor:pointer">+ Registrar abono</button></div>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;padding:24px 36px 8px">
+<sc-for list="{{ payStats }}" as="s" hint-placeholder-count="4"><div style="padding:20px 24px;background:#fff;border-radius:20px;display:flex;flex-direction:column;gap:4px"><span style="font-size:12px;font-weight:600;color:var(--color-neutral-700)">{{ s.k }}</span><span style="font-size:32px;font-weight:700;line-height:1.05;color:{{ s.c }}">{{ s.v }}</span></div></sc-for>
+</div>
+<div style="display:flex;gap:6px;padding:14px 36px;border-bottom:1px solid var(--color-divider)"><span style="font-size:12px;font-weight:700;padding:5px 9px;background:var(--color-text);color:#fff;border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden">Todos 162</span><span style="font-size:12px;padding:5px 9px;border:1.5px solid var(--color-neutral-300);border-radius:999px">Con saldo 61</span><span style="font-size:12px;padding:5px 9px;border:1.5px solid var(--color-neutral-300);border-radius:999px">Sin abonos 9</span><span style="font-size:12px;padding:5px 9px;border:1.5px solid var(--color-neutral-300);border-radius:999px">Liquidados 101</span></div>
+<div style="display:grid;grid-template-columns:1.4fr 90px 1.3fr 110px 120px 104px;gap:14px;padding:10px 36px;font-size:12px;font-weight:700;border-bottom:1px solid var(--color-neutral-300)"><span>Participante</span><span>Paquete</span><span>Pagado / total</span><span>Último abono</span><span>Liquidó</span><span>Estado</span></div>
+<sc-for list="{{ payRows }}" as="p" hint-placeholder-count="8">
+<div style="display:grid;grid-template-columns:1.4fr 90px 1.3fr 110px 120px 104px;gap:14px;padding:12px 36px;border-bottom:1px solid var(--color-divider);align-items:center"><div><div style="font-size:14px;font-weight:700">{{ p.n }}</div><div style="font-size:12px;color:var(--color-neutral-700)">{{ p.perfil }}</div></div><span style="font-size:13px;font-weight:600">{{ p.pq }}</span><div style="display:flex;flex-direction:column;gap:5px"><span style="font-size:13px"><b>{{ p.paidTxt }}</b> de {{ p.totalTxt }} · {{ p.nab }}</span><div style="height:6px;border-radius:99px;overflow:hidden;background:var(--color-neutral-200)"><div style="height:6px;border-radius:99px;width:{{ p.pct }}%;background:var(--ev)"></div></div></div><span style="font-size:13px">{{ p.last }}</span><span style="font-size:13px;font-weight:600">{{ p.liq }}</span><span style="font-size:11px;font-weight:700;padding:3px 7px;background:{{ p.stBg }};color:{{ p.stFg }};border-radius:999px;border:1.5px solid {{ p.stBd }};justify-self:start">{{ p.st }}</span></div>
+</sc-for>
+</main>
+</div></div>
+</div>
+
+<div class="dv-grp">E · Móvil</div>
+<div class="dv-opts">
+
+<div class="dv-opt" id="1n"><div class="dv-olabel"><a class="dv-oid" href="#1n">1n</a>Formulario público de registro</div>
+<div class="dv-card" style="width:390px;height:844px;display:flex;flex-direction:column;border:8px solid #1b1f2b;border-radius:44px;overflow:hidden;background:var(--color-bg)">
+<div style="background:var(--ev);color:#fff;padding:16px 20px 20px;border-radius:0 0 28px 28px;display:flex;flex-direction:column;gap:10px">
+<div style="display:flex;justify-content:space-between;font-size:12px;font-weight:600"><span>9:41</span><span>Registro</span></div>
+<div style="width:48px;height:48px;border:2px solid #fff;border-radius:14px;display:flex;align-items:flex-end;padding:5px;border-radius:12px;font-weight:700">AD</div>
+<div style="font-size:26px;font-weight:700;line-height:1.02;letter-spacing:-0.02em">Jornadas de Diseño AD 2026</div>
+<div style="font-size:13px">27–30 oct · ITSON Náinari</div>
+</div>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid var(--color-divider)"><span style="padding:12px 16px;font-size:12px;font-weight:700;border-bottom:3px solid var(--ev);margin-bottom:-2px">1 Datos</span><span style="padding:12px 16px;font-size:12px;color:var(--color-neutral-700)">2 Paquete</span><span style="padding:12px 16px;font-size:12px;color:var(--color-neutral-700)">3 Talleres</span></div>
+<div style="padding:16px 20px 20px;display:flex;flex-direction:column;gap:12px;flex:1">
+<div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:12px;font-weight:600">Nombre completo</label><div style="border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden;background:#fff;padding:12px;font-size:15px;min-height:48px">Jesús Armenta López</div></div>
+<div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:12px;font-weight:600">Correo</label><div style="border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden;background:#fff;padding:12px;font-size:15px;min-height:48px">jesus.armenta@potros.itson.edu.mx</div></div>
+<div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:12px;font-weight:600">Soy</label><div style="display:flex;flex-wrap:wrap;gap:6px">
+<sc-for list="{{ perfilOptsM }}" as="o" hint-placeholder-count="5"><span style="font-size:14px;font-weight:{{ o.fw }};padding:11px 12px;background:{{ o.bg }};color:{{ o.fg }};border-radius:999px;border:1.5px solid {{ o.bd }}">{{ o.label }}</span></sc-for>
+</div></div>
+<div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:12px;font-weight:600">Carrera</label><div style="border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden;background:#fff;padding:12px;font-size:15px;display:flex;justify-content:space-between;min-height:48px"><span>Lic. en Diseño Gráfico</span><span>▾</span></div></div>
+<div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:12px;font-weight:600">Semestre</label><div style="display:grid;grid-template-columns:repeat(9,1fr);border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden;background:#fff">
+<sc-for list="{{ semestresM }}" as="s" hint-placeholder-count="9"><span style="padding:13px 0;text-align:center;font-size:14px;font-weight:{{ s.fw }};background:{{ s.bg }};color:{{ s.fg }}">{{ s.n }}</span></sc-for>
+</div></div>
+<button style="border-radius:12px;margin-top:auto;background:var(--ev);color:#fff;border:0;padding:16px;font:700 15px/1.2 var(--font-heading);text-align:left;cursor:pointer">Continuar: elegir paquete →</button>
+</div>
+</div></div>
+
+<div class="dv-opt" id="1o"><div class="dv-olabel"><a class="dv-oid" href="#1o">1o</a>Itinerario por día</div>
+<div class="dv-card" style="width:390px;height:844px;display:flex;flex-direction:column;border:8px solid #1b1f2b;border-radius:44px;overflow:hidden;background:var(--color-bg)">
+<div style="padding:20px 20px 14px;display:flex;flex-direction:column;gap:10px;border-bottom:1px solid var(--color-divider)">
+<div style="display:flex;justify-content:space-between;font-size:12px;font-weight:600"><span>9:41</span><span style="color:var(--ev)">AD 2026</span></div>
+<h3 style="margin:0">Itinerario</h3>
+</div>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--color-neutral-300)">
+<sc-for list="{{ mDays }}" as="d" hint-placeholder-count="4"><div style="padding:10px 12px;display:flex;flex-direction:column;background:{{ d.bg }};color:{{ d.fg }};min-height:56px"><span style="font-size:20px;font-weight:700;line-height:1">{{ d.num }}</span><span style="font-size:11px;font-weight:600">{{ d.short }}</span></div></sc-for>
+</div>
+<div style="flex:1;overflow:hidden">
+<sc-for list="{{ day0 }}" as="a" hint-placeholder-count="6">
+<div style="display:grid;grid-template-columns:56px 1fr;gap:12px;padding:12px 20px;border-bottom:1px solid var(--color-divider)"><div style="display:flex;flex-direction:column"><span style="font-size:14px;font-weight:700">{{ a.start }}</span><span style="font-size:11px;color:var(--color-neutral-700)">{{ a.end }}</span></div><div style="border-left:4px solid {{ a.bd }};border-radius:2px;padding-left:10px;display:flex;flex-direction:column;gap:2px"><span style="font-size:11px;font-weight:700;color:var(--ev-700);text-transform:uppercase;letter-spacing:.05em">{{ a.t }} {{ a.simulTag }}</span><span style="font-size:15px;font-weight:700;line-height:1.2">{{ a.n }}</span><span style="font-size:12px;color:var(--color-neutral-700)">{{ a.r }}</span></div></div>
+</sc-for>
+</div>
+</div></div>
+
+<div class="dv-opt" id="1p"><div class="dv-olabel"><a class="dv-oid" href="#1p">1p</a>Registrar abono (admin en mesa de registro)</div>
+<div class="dv-card" style="width:390px;height:844px;display:flex;flex-direction:column;border:8px solid #1b1f2b;border-radius:44px;overflow:hidden;background:var(--color-bg)">
+<div style="padding:20px;display:flex;flex-direction:column;gap:6px;border-bottom:1px solid var(--color-divider)">
+<div style="display:flex;justify-content:space-between;font-size:12px;font-weight:600"><span>9:41</span><span>‹ Pagos</span></div>
+<span style="font-size:12px;font-weight:600;color:var(--color-neutral-700);margin-top:8px">Estudiante · LDG · 3º</span>
+<h3 style="margin:0">Jesús Armenta López</h3>
+</div>
+<div style="padding:20px;display:flex;flex-direction:column;gap:16px;flex:1">
+<div style="display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--color-neutral-300);border-bottom:1px solid var(--color-divider)"><div style="padding:10px 0;display:flex;flex-direction:column"><span style="font-size:11px;color:var(--color-neutral-700)">Básico</span><span style="font-size:20px;font-weight:700">$350</span></div><div style="padding:10px 0;display:flex;flex-direction:column"><span style="font-size:11px;color:var(--color-neutral-700)">Abonado</span><span style="font-size:20px;font-weight:700">$200</span></div><div style="padding:10px 0;display:flex;flex-direction:column"><span style="font-size:11px;color:var(--color-neutral-700)">Saldo</span><span style="font-size:20px;font-weight:700;color:var(--ev)">$150</span></div></div>
+<div style="font-size:13px;display:flex;justify-content:space-between;padding-bottom:8px;border-bottom:1px solid var(--color-divider)"><span>20/09/2026 · Efectivo</span><b>$200</b></div>
+<div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:12px;font-weight:600">Monto del abono</label><div style="border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden;background:#fff;padding:12px;font-size:28px;font-weight:700">$150</div></div>
+<div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:12px;font-weight:600">Fecha</label><div style="border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden;background:#fff;padding:12px;font-size:15px;min-height:48px">18/10/2026</div></div>
+<div style="display:flex;flex-direction:column;gap:6px"><label style="font-size:12px;font-weight:600">Método</label><div style="display:grid;grid-template-columns:repeat(3,1fr);border:1.5px solid var(--color-neutral-300);border-radius:12px;overflow:hidden;background:#fff"><span style="padding:13px 10px;font-size:14px;font-weight:700;background:var(--color-text);color:#fff">Efectivo</span><span style="padding:13px 10px;font-size:14px">Transfer.</span><span style="padding:13px 10px;font-size:14px">Tarjeta</span></div></div>
+<div style="background:var(--ev-100);border:1.5px solid var(--ev);border-radius:12px;padding:12px;font-size:13px;line-height:1.45">Este abono <b>liquida el paquete</b>. Se guardará 18/10/2026 como fecha de liquidación.</div>
+<button style="border-radius:12px;margin-top:auto;background:var(--ev);color:#fff;border:0;padding:16px;font:700 15px/1.2 var(--font-heading);text-align:left;cursor:pointer">Registrar y liquidar</button>
+</div>
+</div></div>
+</div>
+
+<p class="dv-next">Siguientes pasos: "convierte esto en prototipo navegable" · "agrega el paso 2 y 3 del formulario público (<a class="dv-oid" href="#1n">1n</a>)" · "muestra la vista Día del calendario en escritorio"</p>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;eventColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#3047c8&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;#3047c8&quot;,&quot;#ec3013&quot;,&quot;#1f7a52&quot;,&quot;#7a2f8f&quot;],&quot;section&quot;:&quot;Evento&quot;}}">
+class Component extends DCLogic {
+  qrRef = React.createRef();
+  certQrRef = React.createRef();
+  state = { exp: { participantes: true, pagos: true, asistencia: true, constancias: false }, fmt: 'xls' };
+  exportFiles() {
+    const esc = v => { v = String(v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+    const html = v => String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+    Object.entries(this.state.exp).filter(([, on]) => on).forEach(([k]) => {
+      const d = this._ds[k], xls = this.state.fmt === 'xls';
+      const body = xls
+        ? `<html><head><meta charset="utf-8"></head><body><table border="1"><tr>${d.head.map(h => `<th>${html(h)}</th>`).join('')}</tr>${d.rows.map(r => `<tr>${r.map(c => `<td>${html(c)}</td>`).join('')}</tr>`).join('')}</table></body></html>`
+        : '\ufeff' + [d.head, ...d.rows].map(r => r.map(esc).join(',')).join('\r\n');
+      const blob = new Blob([body], { type: xls ? 'application/vnd.ms-excel' : 'text/csv;charset=utf-8' });
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+      a.download = `AD2026-${k}.${xls ? 'xls' : 'csv'}`; a.click();
+    });
+  }
+  qrText = 'https://aforo.app/a/AD26-SER-27';
+  componentDidMount() {
+    this.applyEv();
+    const tick = () => window.qrcode ? this.drawQR() : setTimeout(tick, 150);
+    tick();
+  }
+  componentDidUpdate() { this.applyEv(); this.drawQR(); }
+  qrMatrix() { const q = window.qrcode(0, 'M'); q.addData(this.qrText); q.make(); return q; }
+  paintQR(ctx, x, y, size) {
+    const q = this.qrMatrix(), n = q.getModuleCount(), m = size / n;
+    ctx.fillStyle = '#1b1f2b';
+    for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) if (q.isDark(r, c)) ctx.fillRect(Math.floor(x + c * m), Math.floor(y + r * m), Math.ceil(m), Math.ceil(m));
+  }
+  drawQR() {
+    const cv = this.qrRef.current; if (!cv || !window.qrcode) return;
+    const ctx = cv.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, cv.width, cv.height);
+    this.paintQR(ctx, 0, 0, cv.width);
+    const c2 = this.certQrRef.current;
+    if (c2) { const x = c2.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, 72, 72); this.paintQR(x, 0, 0, 72); }
+  }
+  download(type) {
+    if (!window.qrcode) return;
+    const W = 1200, H = 1600, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+    const ctx = cv.getContext('2d'), ev = getComputedStyle(document.documentElement).getPropertyValue('--ev').trim() || '#3047c8';
+    const font = (w, s) => `${w} ${s}px Figtree, system-ui, sans-serif`;
+    ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = ev; ctx.beginPath(); ctx.roundRect(0, 0, W, 420, [0, 0, 64, 64]); ctx.fill();
+    ctx.fillStyle = '#fff'; ctx.font = font(600, 34); ctx.fillText('Jornadas de Diseño AD 2026 · Taller', 90, 120);
+    ctx.font = font(700, 92); ctx.fillText('Serigrafía básica', 90, 240);
+    ctx.font = font(500, 38); ctx.fillText('Mar 27 · 12:00–14:00 · Taller de gráfica', 90, 320);
+    this.paintQR(ctx, 200, 520, 800);
+    ctx.fillStyle = '#1b1f2b'; ctx.textAlign = 'center';
+    ctx.font = '600 44px ui-monospace, Menlo, monospace'; ctx.fillText('AD26-SER-27', W / 2, 1420);
+    ctx.font = font(500, 36); ctx.fillStyle = '#5a6070'; ctx.fillText('Escanea para registrar tu asistencia · Aforo', W / 2, 1490);
+    const a = document.createElement('a');
+    a.download = `QR-asistencia-serigrafia.${type === 'jpeg' ? 'jpg' : 'png'}`;
+    a.href = cv.toDataURL('image/' + type, 0.95); a.click();
+  }
+  applyEv() { document.documentElement.style.setProperty('--ev', this.props.eventColor ?? '#3047c8'); }
+  renderVals() {
+    const ev = this.props.eventColor ?? '#3047c8';
+    const T = h => String(Math.floor(h)).padStart(2, '0') + ':' + (h % 1 ? '30' : '00');
+    const $ = n => '$' + n.toLocaleString('es-MX');
+    const days = [['27','Martes','Mar'],['28','Miércoles','Mié'],['29','Jueves','Jue'],['30','Viernes','Vie']];
+    const out = { bg: '#fff', fg: 'var(--color-text)', bd: 'var(--color-text)' };
+    const TY = { Conferencia: { bg: 'var(--ev)', fg: '#fff', bd: 'var(--ev)' }, Taller: { bg: 'var(--ev-100)', fg: 'var(--ev-800)', bd: 'var(--ev)' }, Comida: { bg: 'var(--color-neutral-200)', fg: 'var(--color-text)', bd: 'var(--color-neutral-500)' }, Concierto: { bg: 'var(--color-text)', fg: '#fff', bd: 'var(--color-text)' }, Ceremonia: out, 'Exposición': out };
+    const A = [
+      {d:0,s:9,e:10,t:'Ceremonia',n:'Inauguración',p:'Comité organizador',r:'Auditorio Central'},
+      {d:0,s:10,e:11.5,t:'Conferencia',n:'Diseño y territorio',p:'Mtra. Lucía Ferrer',r:'Auditorio Central'},
+      {d:0,s:12,e:14,t:'Taller',n:'Tipografía experimental',p:'Diego Arvizu',r:'Lab. 3',cap:25,occ:25},
+      {d:0,s:12,e:14,t:'Taller',n:'Serigrafía básica',p:'Ana Valenzuela',r:'Taller de gráfica',cap:20,occ:17},
+      {d:0,s:14,e:15.5,t:'Comida',n:'Comida',r:'Explanada'},
+      {d:0,s:16,e:18,t:'Taller',n:'Fotografía análoga',p:'Marco Esquer',r:'Lab. de foto',cap:15,occ:12},
+      {d:1,s:9,e:10.5,t:'Conferencia',n:'Branding para lo público',p:'Estudio Norte',r:'Auditorio Central'},
+      {d:1,s:11,e:13,t:'Taller',n:'Motion design',p:'Paula Ibarra',r:'Lab. 3',cap:25,occ:22},
+      {d:1,s:11,e:13,t:'Taller',n:'Encuadernación japonesa',p:'Rocío Leyva',r:'Taller de gráfica',cap:18,occ:18},
+      {d:1,s:11,e:13,t:'Taller',n:'UI accesible',p:'Iván Soto',r:'Lab. 5',cap:30,occ:19},
+      {d:1,s:13,e:14.5,t:'Comida',n:'Comida',r:'Explanada'},
+      {d:1,s:15,e:17,t:'Conferencia',n:'Panel: diseñar en el noroeste',p:'4 ponentes',r:'Auditorio Central'},
+      {d:2,s:10,e:11,t:'Conferencia',n:'Interfaces que cuidan',p:'Dra. Elena Mares',r:'Auditorio Central'},
+      {d:2,s:11.5,e:13.5,t:'Taller',n:'Ilustración editorial',p:'Tomás Rendón',r:'Lab. 3',cap:25,occ:20},
+      {d:2,s:11.5,e:13.5,t:'Taller',n:'Risografía',p:'Colectivo Tinta',r:'Taller de gráfica',cap:12,occ:12},
+      {d:2,s:13.5,e:15,t:'Comida',n:'Comida',r:'Explanada'},
+      {d:2,s:19,e:22,t:'Concierto',n:'Noche AD',p:'Los Médanos + DJ Kora',r:'Explanada'},
+      {d:3,s:10,e:12,t:'Exposición',n:'Muestra de proyectos',p:'Alumnos LDG',r:'Galería'},
+      {d:3,s:12,e:13,t:'Ceremonia',n:'Clausura y constancias',p:'Comité organizador',r:'Auditorio Central'},
+      {d:3,s:13.5,e:15.5,t:'Comida',n:'Comida de clausura',r:'Explanada'}
+    ];
+    const HH = 40;
+    const acts = A.map(a => {
+      const sim = A.filter(b => b.d === a.d && b.s < a.e && b.e > a.s);
+      const lane = sim.indexOf(a), full = a.cap && a.occ >= a.cap;
+      return { ...a, ...TY[a.t], p: a.p || '', day: days[a.d][2] + ' ' + days[a.d][0], time: T(a.s) + '–' + T(a.e), start: T(a.s), end: T(a.e),
+        top: (a.s - 8) * HH, h: (a.e - a.s) * HH - 3, left: lane * 100 / sim.length, w: 100 / sim.length,
+        cupo: a.cap ? `${a.occ}/${a.cap}` : '—', cupoTxt: a.cap ? (full ? 'Lleno' : `${a.occ}/${a.cap}`) : '',
+        cupoColor: full ? 'var(--color-accent-700)' : 'var(--color-text)',
+        pct: a.cap ? Math.round(a.occ / a.cap * 100) : 0, full, simulTag: sim.length > 1 ? `· simultáneo (${sim.length})` : '' };
+    });
+    const weekDays = days.map((d, i) => ({ num: d[0], name: d[1] + ' ' + d[0], short: d[2], blocks: acts.filter(a => a.d === i) }));
+    const hourMarks = Array.from({ length: 14 }, (_, i) => ({ label: T(8 + i), top: i * HH + (i === 0 ? 8 : 0) }));
+    const monthCells = [];
+    [28, 29, 30].forEach(n => monthCells.push({ num: n, bg: 'transparent', fw: 400, color: 'var(--color-neutral-500)', chips: [], more: '' }));
+    for (let n = 1; n <= 31; n++) {
+      const di = n - 27, isEv = di >= 0 && di <= 3, list = isEv ? acts.filter(a => a.d === di) : [];
+      monthCells.push({ num: n, bg: isEv ? 'var(--ev-100)' : n === 18 ? '#fff' : 'transparent', fw: isEv || n === 18 ? 800 : 400, color: isEv ? 'var(--ev)' : 'var(--color-text)',
+        chips: list.slice(0, 4).map(a => ({ label: a.start + ' ' + a.n, bg: a.t === 'Conferencia' ? 'var(--ev)' : '#fff', fg: a.t === 'Conferencia' ? '#fff' : 'var(--color-text)', bd: a.bd })),
+        more: list.length > 4 ? `+${list.length - 4} más` : '' });
+    }
+    monthCells.push({ num: 1, bg: 'transparent', fw: 400, color: 'var(--color-neutral-500)', chips: [], more: '' });
+    const talleres = acts.filter(a => a.t === 'Taller').map(a => ({ n: a.n, pct: a.pct, cupo: a.cupo, bar: a.full ? 'var(--color-text)' : 'var(--ev)' }));
+    const pk = [
+      { n: 'Básico', price: 350, sold: 48, desc: 'Para quien solo asiste a conferencias.', inc: ['Todas las conferencias', 'Kit de bienvenida', 'Constancia'] },
+      { n: 'Completo', price: 850, sold: 71, desc: 'El más elegido por estudiantes.', inc: ['Todas las conferencias', '2 talleres a elegir', 'Comidas (3)', 'Kit y constancia'] },
+      { n: 'Total', price: 1200, sold: 31, desc: 'Todo el programa.', inc: ['Todas las conferencias', '3 talleres a elegir', 'Comidas (4)', 'Concierto Noche AD', 'Kit y constancia'] },
+      { n: 'Externo', price: 1500, sold: 12, desc: 'Público no ITSON.', inc: ['Igual que Total', 'Estacionamiento', 'Kit y constancia'] }
+    ];
+    const packages = pk.map(p => ({ ...p, price: $(p.price), total: $(p.price * p.sold), pct: Math.round(p.sold / 71 * 100) }));
+    const ST = { Liquidado: { stBg: 'var(--ev)', stFg: '#fff', stBd: 'var(--ev)' }, Abonado: { stBg: 'var(--ev-100)', stFg: 'var(--ev-800)', stBd: 'var(--ev)' }, Pendiente: { stBg: '#fff', stFg: 'var(--color-accent-700)', stBd: 'var(--color-accent-700)' }, '—': { stBg: 'transparent', stFg: 'var(--color-neutral-600)', stBd: 'transparent' } };
+    const P = [
+      ['Valeria Quintero Ruiz','valeria.quintero@potros.itson.edu.mx','Participante','Estudiante · LDG · 5º','Completo',850,850],
+      ['Jesús Armenta López','jesus.armenta@potros.itson.edu.mx','Participante','Estudiante · LDG · 3º','Básico',350,200],
+      ['Karla Estrada Félix','karla.estrada@potros.itson.edu.mx','Participante','Estudiante · Arquitectura · 7º','Total',1200,600],
+      ['Mtra. Lucía Ferrer','lucia@ferrerestudio.mx','Conferencista','Externo'],
+      ['Diego Arvizu','diego.arvizu@itson.edu.mx','Tallerista','Docente'],
+      ['Roberto Félix Soto','rfelix.soto@gmail.com','Participante','Familiar','Básico',350,0],
+      ['Imprenta Sonora','contacto@imprentasonora.mx','Patrocinador','Externo'],
+      ['Sofía Bórquez','sofia.borquez@potros.itson.edu.mx','Staff','Estudiante · LDG · 7º'],
+      ['Luis Fernando Gil','lfgil@hotmail.com','Participante','Externo','Externo',1500,1500],
+      ['Dr. Ramón Ochoa','ramon.ochoa@itson.edu.mx','Organizador','Administrativo'],
+      ['Andrea Molina','andrea.molina@potros.itson.edu.mx','Colaborador','Docente'],
+      ['Paula Ibarra','paula.ibarra@itson.edu.mx','Ponente','Docente']
+    ];
+    const people = P.map(([n, e, rol, perfil, pq, total, paid]) => {
+      const st = pq ? (paid >= total ? 'Liquidado' : paid > 0 ? 'Abonado' : 'Pendiente') : '—';
+      return { n, e, rol, perfil, pq: pq || '—', totalTxt: pq ? $(total) : '—', saldoTxt: pq ? $(total - paid) : '—', st, ...ST[st], rowBg: n.startsWith('Karla') ? 'var(--ev-100)' : 'transparent' };
+    });
+    const roles = [['Todos',214],['Participante',162],['Organizador',4],['Colaborador',9],['Ponente',6],['Conferencista',5],['Tallerista',8],['Patrocinador',6],['Staff',14]];
+    const roleChips = roles.map(([label, n], i) => i === 0 ? { label, n, fw: 800, bg: 'var(--color-text)', fg: '#fff', bd: 'var(--color-text)' } : { label, n, fw: 400, bg: 'transparent', fg: 'var(--color-text)', bd: 'var(--color-neutral-400)' });
+    const chip = (sel) => (label) => label === sel ? { label, fw: 800, bg: 'var(--ev)', fg: '#fff', bd: 'var(--ev)' } : { label, fw: 400, bg: '#fff', fg: 'var(--color-text)', bd: 'var(--color-neutral-400)' };
+    const perfilL = ['Estudiante', 'Docente', 'Administrativo', 'Externo', 'Familiar'];
+    const sem = sel => Array.from({ length: 9 }, (_, i) => i + 1 === sel ? { n: i + 1, fw: 800, bg: 'var(--ev)', fg: '#fff' } : { n: i + 1, fw: 400, bg: 'transparent', fg: 'var(--color-text)' });
+    const opt = (n, r, cupo, sel, full) => ({ n, r, cupo, fw: sel ? 800 : 400, bg: sel ? 'var(--ev-100)' : '#fff', bd: sel ? 'var(--ev)' : 'var(--color-neutral-300)', dot: sel ? 'var(--ev)' : '#fff', op: full ? 0.5 : 1 });
+    const payRows = [
+      ['Valeria Quintero Ruiz','LDG · 5º','Completo',850,850,2,'12/09/2026','12/09/2026'],
+      ['Jesús Armenta López','LDG · 3º','Básico',350,200,1,'20/09/2026','—'],
+      ['Karla Estrada Félix','Arquitectura · 7º','Total',1200,600,2,'26/09/2026','—'],
+      ['Roberto Félix Soto','Familiar','Básico',350,0,0,'—','—'],
+      ['Mariana Coronado','LDG · 9º','Completo',850,850,3,'01/10/2026','01/10/2026'],
+      ['Luis Fernando Gil','Externo','Externo',1500,1500,1,'15/09/2026','15/09/2026'],
+      ['Daniela Ruelas','Diseño Industrial · 5º','Completo',850,400,1,'08/10/2026','—'],
+      ['Héctor Valdez','Docente','Total',1200,1200,2,'10/10/2026','10/10/2026']
+    ].map(([n, perfil, pq, total, paid, k, last, liq]) => { const st = paid >= total ? 'Liquidado' : paid > 0 ? 'Abonado' : 'Pendiente'; return { n, perfil, pq, paidTxt: $(paid), totalTxt: $(total), nab: k === 1 ? '1 abono' : `${k} abonos`, pct: Math.round(paid / total * 100), last, liq, st, ...ST[st] }; });
+    const pal = [['Cobalto','#3047c8','#1b2470','#e3e6fa'],['Bermellón','#ec3013','#7c1405','#ffe0d9'],['Bosque','#1f7a52','#0f3d29','#dcefe5'],['Ocre','#b97a0e','#5c3d07','#f6ead2'],['Ciruela','#7a2f8f','#3d1748','#efdff3'],['Grafito','#2d2b2b','#605d5d','#eae7e7']];
+    const attData = [[0,0,0],[1,184,141],[2,25,23],[3,17,14],[4,0,0],[5,12,0]];
+    const attActs = attData.map(([i, reg, att]) => { const a = acts[i]; const r = a.cap ? a.occ : reg; return { n: a.n, start: a.start, reg: r || 158, att: att || (i === 0 ? 149 : i === 4 ? 136 : 0), get pct() { return this.reg ? Math.round(this.att / this.reg * 100) : 0; }, get pctTxt() { return a.s >= 16 ? 'Próxima' : this.pct + '%'; }, bg: i === 3 ? 'var(--ev-100)' : '#fff' }; }).map(o => ({ n: o.n, start: o.start, reg: o.reg, att: o.att, pct: o.pct, pctTxt: o.pctTxt, bg: o.bg }));
+    const AS = { Asistió: { bg: '#dcf3ea', fg: '#0b6b50' }, Falta: { bg: 'var(--color-neutral-200)', fg: 'var(--color-neutral-700)' }, 'Sin inscripción': { bg: '#fdf0d9', fg: '#8a5a06' } };
+    const attendees = [
+      ['Karla Estrada Félix','Estudiante · Arquitectura · 7º','QR · 12:04','Asistió'],
+      ['Valeria Quintero Ruiz','Estudiante · LDG · 5º','QR · 11:58','Asistió'],
+      ['Mariana Coronado','Estudiante · LDG · 9º','QR · 12:01','Asistió'],
+      ['Daniela Ruelas','Estudiante · Diseño Industrial · 5º','QR · 12:02','Asistió'],
+      ['Héctor Valdez','Docente','Manual · S. Bórquez','Asistió'],
+      ['Jesús Armenta López','Estudiante · LDG · 3º','—','Falta'],
+      ['Luis Fernando Gil','Externo','—','Falta'],
+      ['Renata Sabori','Estudiante · LDG · 1º','QR · 12:10','Sin inscripción']
+    ].map(([n, perfil, via, st]) => ({ n, perfil, via, st, ...AS[st] }));
+    const CS = { Enviada: { bg: '#dcf3ea', fg: '#0b6b50' }, Lista: { bg: 'var(--ev-100)', fg: 'var(--ev-800)' }, 'Sin asistencia': { bg: 'var(--color-neutral-200)', fg: 'var(--color-neutral-700)' } };
+    const certRecipients = [
+      ['Karla Estrada Félix','karla.estrada@potros.itson.edu.mx','Lista'],
+      ['Valeria Quintero Ruiz','valeria.quintero@potros.itson.edu.mx','Lista'],
+      ['Mariana Coronado','mariana.coronado@potros.itson.edu.mx','Lista'],
+      ['Daniela Ruelas','daniela.ruelas@potros.itson.edu.mx','Lista'],
+      ['Héctor Valdez','hector.valdez@itson.edu.mx','Enviada'],
+      ['Renata Sabori','renata.sabori@potros.itson.edu.mx','Lista'],
+      ['Jesús Armenta López','jesus.armenta@potros.itson.edu.mx','Sin asistencia'],
+      ['Luis Fernando Gil','lfgil@hotmail.com','Sin asistencia']
+    ].map(([n, e, st]) => { const ok = st !== 'Sin asistencia'; return { n, e, st, ...CS[st], op: ok ? 1 : 0.55, check: ok ? '✓' : '', boxBg: ok ? 'var(--ev)' : '#fff', boxBd: ok ? 'var(--ev)' : 'var(--color-neutral-400)' }; });
+    const ds = {
+      participantes: { t: 'Participantes', d: 'Nombre, correo, rol, perfil escolar y paquete', count: '214 filas',
+        head: ['Nombre','Correo','Rol','Perfil','Paquete','Total','Pagado','Saldo'],
+        rows: P.map(([n, e, rol, perfil, pq, total, paid]) => [n, e, rol, perfil, pq || '—', pq ? $(total) : '—', pq ? $(paid) : '—', pq ? $(total - paid) : '—']) },
+      pagos: { t: 'Pagos y abonos', d: 'Total, abonos con fecha y fecha de liquidación', count: '162 filas',
+        head: ['Nombre','Perfil','Paquete','Total','Pagado','Abonos','Último abono','Liquidó'],
+        rows: payRows.map(p => [p.n, p.perfil, p.pq, p.totalTxt, p.paidTxt, p.nab, p.last, p.liq]) },
+      asistencia: { t: 'Asistencia a actividades', d: 'Inscritos vs. asistentes por actividad', count: '1,284 filas',
+        head: ['Nombre','Perfil','Actividad','Fecha','Horario','Inscrito','Estado','Registro'],
+        rows: attendees.map(a => [a.n, a.perfil, 'Serigrafía básica', '27/10/2026', '12:00–14:00', a.st === 'Sin inscripción' ? 'No' : 'Sí', a.st, a.via]) },
+      constancias: { t: 'Constancias', d: 'Folio, actividad, duración y estado de envío', count: '412 filas',
+        head: ['Nombre','Correo','Actividad','Fecha','Duración','Folio','Estado','Enviada'],
+        rows: certRecipients.filter(c => c.op === 1).map((c, i) => [c.n, c.e, 'Serigrafía básica', '27/10/2026', '2 h', 'AD26-SER-0' + (142 + i), c.st, c.st === 'Enviada' ? '31/10/2026' : '—']) }
+    };
+    this._ds = ds;
+    const exp = this.state.exp, firstKey = Object.keys(exp).find(k => exp[k]) || 'participantes', nSel = Object.values(exp).filter(Boolean).length;
+    const xls = this.state.fmt === 'xls', fOn = { bg: '#fff', sh: '0 1px 4px rgba(27,31,43,.12)' }, fOff = { bg: 'transparent', sh: 'none' };
+    return {
+      certQrRef: this.certQrRef, certRecipients,
+      certFields: ['{nombre}','{actividad}','{tipo}','{fecha}','{duración}','{evento}','{ponente}'],
+      exportSets: Object.entries(ds).map(([k, d]) => { const on = exp[k]; return { n: d.t, d: d.d, check: on ? '✓' : '', bd: on ? 'var(--ev)' : 'var(--color-divider)', bg: on ? 'var(--ev-100)' : '#fff', boxBg: on ? 'var(--ev)' : '#fff', boxBd: on ? 'var(--ev)' : 'var(--color-neutral-400)', pick: () => this.setState(s => ({ exp: { ...s.exp, [k]: !s.exp[k] } })) }; }),
+      fmtX: xls ? fOn : fOff, fmtC: xls ? fOff : fOn,
+      setXlsx: () => this.setState({ fmt: 'xls' }), setCsv: () => this.setState({ fmt: 'csv' }),
+      fmtNote: xls ? 'Se abre directo en Excel. Un archivo por tipo de dato.' : 'Separado por comas, UTF-8. Un archivo por tipo de dato.',
+      exportLabel: nSel ? `Descargar ${nSel} archivo${nSel > 1 ? 's' : ''} ${xls ? 'Excel' : 'CSV'}` : 'Elige qué exportar',
+      doExport: () => this.exportFiles(),
+      previewTitle: ds[firstKey].t, previewCount: ds[firstKey].count, csvHead: ds[firstKey].head, csvRows: ds[firstKey].rows.slice(0, 9),
+      qrRef: this.qrRef, dlPng: () => this.download('png'), dlJpg: () => this.download('jpeg'), attActs, attendees,
+      events: [
+        { name: 'Jornadas de Diseño AD 2026', mono: 'AD', dates: '27–30 oct 2026', status: 'Activo', role: 'Creadora', color: ev, count: '214 personas · 20 actividades', desc: 'Conferencias, talleres y muestra de proyectos de la Academia de Diseño.' },
+        { name: 'Semana de Ingeniería', mono: 'SI', dates: '10–14 nov 2026', status: 'Borrador', role: 'Administradora', color: '#1f7a52', count: '86 personas · 12 actividades', desc: 'Retos, conferencias y feria de proyectos de las ingenierías.' },
+        { name: 'Foro de Egresados LDG', mono: 'FE', dates: '14 mar 2026', status: 'Finalizado', role: 'Creadora', color: '#605d5d', count: '132 personas · 6 actividades', desc: 'Encuentro anual de egresados de Diseño Gráfico.' }
+      ],
+      steps: ['Datos','Paleta','Fechas y horarios','Paquetes','Administradores'].map((label, i) => ({ n: '0' + (i + 1), label, on: i < 3, off: i >= 3 })),
+      palettes: pal.map(([name, a, b, c]) => { const on = a.toLowerCase() === ev.toLowerCase(); return { name, a, b, c, border: on ? '2px solid var(--color-text)' : '2px solid transparent', fw: on ? 800 : 400, mark: on ? '●' : '' }; }),
+      hours4: [['Mar 27','08:30','19:00'],['Mié 28','09:00','18:00'],['Jue 29','09:00','22:30'],['Vie 30','09:00','16:00']].map(([d, a, b]) => ({ d, a, b })),
+      stats: [
+        { k: 'Personas registradas', v: '214', sub: '162 participantes · 52 equipo', pct: 100 },
+        { k: 'Recaudado', v: '$96,400', sub: 'de $132,350 esperados', pct: 73 },
+        { k: 'Con saldo pendiente', v: '61', sub: '9 sin ningún abono', pct: 38 },
+        { k: 'Ocupación de talleres', v: '85%', sub: '3 de 8 talleres llenos', pct: 85 }
+      ],
+      perfiles: [['Estudiante',118],['Docente',14],['Administrativo',7],['Externo',17],['Familiar',6]].map(([k, v]) => ({ k, v })),
+      day0: acts.filter(a => a.d === 0), talleres, packages, acts, weekDays, hourMarks, monthCells,
+      dow: ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'],
+      typeChips: [{ label: 'Todas 20', ...out, bg: 'var(--color-text)', fg: '#fff' }, ...['Conferencia','Taller','Comida','Concierto','Ceremonia'].map(t => ({ label: t, ...TY[t] }))],
+      admins: [
+        { n: 'Andrea Molina', e: 'andrea.molina@potros.itson.edu.mx', p: 'Acceso completo', role: 'Creadora', last: 'Hoy, 10:42', act: '' },
+        { n: 'Dr. Ramón Ochoa', e: 'ramon.ochoa@itson.edu.mx', p: 'Acceso completo', role: 'Administrador', last: 'Ayer, 18:05', act: 'Quitar' },
+        { n: 'Sofía Bórquez', e: 'sofia.borquez@potros.itson.edu.mx', p: 'Registro y pagos', role: 'Administradora', last: '15 oct, 12:30', act: 'Quitar' }
+      ],
+      people, roleChips,
+      perfilOpts: perfilL.map(chip('Estudiante')), perfilOptsM: perfilL.map(chip('Estudiante')),
+      semestres: sem(7), semestresM: sem(3),
+      pkgOpts: pk.map(p => { const on = p.n === 'Total'; return { n: p.n, price: $(p.price), fw: on ? 800 : 400, bg: on ? 'var(--ev-100)' : '#fff', dot: on ? 'var(--ev)' : '#fff' }; }),
+      abonos: [{ f: '05/09/2026', m: 'Transferencia · S. Bórquez', v: '$300' }, { f: '26/09/2026', m: 'Efectivo · R. Ochoa', v: '$300' }],
+      bloques: [
+        { label: 'Mar 27 · 12:00–14:00', count: '2 opciones', opts: [opt('Tipografía experimental', 'Diego Arvizu · Lab. 3', 'Lleno', false, true), opt('Serigrafía básica', 'Ana Valenzuela · Taller de gráfica', '17/20', true)] },
+        { label: 'Mié 28 · 11:00–13:00', count: '3 opciones', opts: [opt('Motion design', 'Paula Ibarra · Lab. 3', '22/25', true), opt('Encuadernación japonesa', 'Rocío Leyva · Taller de gráfica', 'Lleno', false, true), opt('UI accesible', 'Iván Soto · Lab. 5', '19/30', false)] },
+        { label: 'Jue 29 · 11:30–13:30', count: '2 opciones', opts: [opt('Ilustración editorial', 'Tomás Rendón · Lab. 3', '20/25', true), opt('Risografía', 'Colectivo Tinta · Taller de gráfica', 'Lleno', false, true)] }
+      ],
+      payStats: [{ k: 'Esperado', v: '$132,350', c: 'var(--color-text)' }, { k: 'Cobrado', v: '$96,400', c: 'var(--ev)' }, { k: 'Por cobrar', v: '$35,950', c: 'var(--color-text)' }, { k: 'Liquidados', v: '101 / 162', c: 'var(--color-text)' }],
+      payRows,
+      mDays: days.map((d, i) => ({ num: d[0], short: d[2], bg: i === 0 ? 'var(--ev)' : 'transparent', fg: i === 0 ? '#fff' : 'var(--color-text)' }))
+    };
+  }
+}
+</script>
+</body>
+</html>

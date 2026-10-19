@@ -1,0 +1,19 @@
+# Configuración mínima para `supabase start` / `supabase functions deploy`.
+project_id = "aforo"
+
+[auth]
+site_url = "http://localhost:5173"
+additional_redirect_urls = ["http://localhost:5173/restablecer"]
+
+[auth.email]
+enable_signup = true
+enable_confirmations = false
+
+[storage]
+file_size_limit = "5MiB"
+
+[functions.invite-admin]
+verify_jwt = true
+
+[functions.send-mail]
+verify_jwt = true
