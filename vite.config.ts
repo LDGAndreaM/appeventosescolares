@@ -1,3 +1,5 @@
+import fs from 'node:fs'
+import path from 'node:path'
 import react from '@vitejs/plugin-react'
 import { defineConfig, loadEnv } from 'vite'
 
@@ -21,7 +23,20 @@ export default defineConfig(({ mode }) => {
   )
   const publicUrl = pick(env.VITE_PUBLIC_URL, env.VERCEL_PROJECT_PRODUCTION_URL && `https://${env.VERCEL_PROJECT_PRODUCTION_URL}`)
   return {
-    plugins: [react()],
+    plugins: [
+      react(),
+      {
+        // Respaldo para rutas internas (/eventos, /a/…): si el hosting no aplica la reescritura
+        // de vercel.json, su página 404 también carga la app.
+        name: 'spa-404-fallback',
+        apply: 'build',
+        closeBundle() {
+          const dist = path.resolve(process.cwd(), 'dist')
+          if (fs.existsSync(path.join(dist, 'index.html')))
+            fs.copyFileSync(path.join(dist, 'index.html'), path.join(dist, '404.html'))
+        },
+      },
+    ],
     define: {
       'import.meta.env.VITE_SUPABASE_URL': JSON.stringify(url),
       'import.meta.env.VITE_SUPABASE_ANON_KEY': JSON.stringify(anon),
