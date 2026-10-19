@@ -27,6 +27,8 @@ export function friendlyError(e: unknown): string {
   if (/Email not confirmed/i.test(raw)) return 'Confirma tu correo antes de entrar (revisa tu bandeja).';
   if (/User already registered/i.test(raw)) return 'Ya existe una cuenta con ese correo. Inicia sesión.';
   if (/Password should be/i.test(raw)) return 'La contraseña debe tener al menos 6 caracteres.';
+  if (/Failed to send a request to the Edge Function|Function not found|NOT_FOUND.*function/i.test(raw))
+    return 'Esta función aún no está activada en Supabase (falta desplegar las Edge Functions «send-mail» e «invite-admin»).';
   if (/dynamically imported module|Importing a module script failed|error loading dynamically/i.test(raw))
     return 'Hay una versión nueva de Aforo. Recarga la página (Ctrl + Shift + R) e inténtalo de nuevo.';
   if (/Tainted canvases|SecurityError/i.test(raw))
