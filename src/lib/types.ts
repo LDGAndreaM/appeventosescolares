@@ -160,6 +160,8 @@ export interface CertificateSettings {
   body_activity: string;
   body_general: string;
   body_role: string;
+  background_url: string | null;
+  extra_logos: string[];
   signers: Signer[];
   show_verification: boolean;
 }

@@ -18,7 +18,7 @@ interface Verified {
   activity: { type: string; name: string; speaker: string; day: string; starts_at: string; ends_at: string } | null;
   attended: { type: string; name: string; day: string; starts_at: string; ends_at: string }[] | null;
   given?: { type: string; name: string; day: string; starts_at: string; ends_at: string }[] | null;
-  settings: { body_activity: string; body_general: string; body_role?: string; signers: Signer[]; show_verification: boolean };
+  settings: { body_activity: string; body_general: string; body_role?: string; signers: Signer[]; show_verification: boolean; background_url?: string | null; extra_logos?: string[] };
 }
 
 /** Verificación pública de una constancia (destino del QR) y descarga en PDF. */
@@ -39,6 +39,7 @@ export default function CertificateView() {
     ? {
         color: c.event.color_primary, eventName: c.event.name, organizer: c.event.organizer, acronym: c.event.acronym, logoUrl: c.event.logo_url,
         folio: c.folio, personName: c.person.full_name, signers: c.settings.signers, showVerification: c.settings.show_verification,
+        background: c.settings.background_url ?? null, extraLogos: c.settings.extra_logos ?? [],
         ...(c.kind === 'role'
           ? {
               title: 'Constancia de participación',

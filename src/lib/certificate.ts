@@ -19,6 +19,10 @@ export interface CertificateData {
   /** Encabezado; por defecto «Constancia de asistencia». */
   title?: string;
   list?: string[];
+  /** Hasta 2 logos adicionales (esquina superior derecha). */
+  extraLogos?: string[];
+  /** Imagen de fondo a toda la hoja (carta horizontal). */
+  background?: string | null;
   signers: Signer[];
   showVerification: boolean;
 }
@@ -118,6 +122,14 @@ function wrapRich(ctx: CanvasRenderingContext2D, body: string, size: number, wid
   return lines;
 }
 
+/** Dibuja una imagen completa dentro de un recuadro, sin deformarla. Devuelve el ancho usado. */
+function fitContain(ctx: CanvasRenderingContext2D, img: HTMLImageElement, x: number, y: number, maxW: number, maxH: number, align: 'left' | 'right') {
+  const k = Math.min(maxW / img.width, maxH / img.height);
+  const w = img.width * k, h = img.height * k;
+  ctx.drawImage(img, align === 'right' ? x + maxW - w : x, y + (maxH - h) / 2, w, h);
+  return w;
+}
+
 function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
   ctx.beginPath();
   ctx.roundRect(x, y, w, h, r);
@@ -126,25 +138,35 @@ function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: numbe
 /** Dibuja la constancia en un canvas (proporción carta horizontal 11 × 8.5). */
 export async function drawCertificate(canvas: HTMLCanvasElement, d: CertificateData, scale = 2) {
   await document.fonts?.load(F(700, 44)).catch(() => undefined);
-  const [logo, ...sigs] = await Promise.all([loadImage(d.logoUrl), ...d.signers.map((s) => loadImage(s.signature_url))]);
+  const extras = (d.extraLogos ?? []).filter(Boolean).slice(0, 2);
+  const [logo, bg, ...rest] = await Promise.all([
+    loadImage(d.logoUrl), loadImage(d.background), ...extras.map(loadImage), ...d.signers.map((s) => loadImage(s.signature_url)),
+  ]);
+  const extraImgs = rest.slice(0, extras.length).filter((x): x is HTMLImageElement => !!x);
+  const sigs = rest.slice(extras.length);
   canvas.width = BW * scale;
   canvas.height = BH * scale;
   const ctx = canvas.getContext('2d')!;
   ctx.setTransform(scale, 0, 0, scale, 0, 0);
   ctx.fillStyle = '#fff';
   ctx.fillRect(0, 0, BW, BH);
-  ctx.fillStyle = d.color;
-  ctx.fillRect(0, 0, 14, BH);
+  if (bg) {
+    // fondo a toda la hoja, recortado para cubrir sin deformarse
+    const k = Math.max(BW / bg.width, BH / bg.height);
+    ctx.drawImage(bg, (BW - bg.width * k) / 2, (BH - bg.height * k) / 2, bg.width * k, bg.height * k);
+  } else {
+    ctx.fillStyle = d.color;
+    ctx.fillRect(0, 0, 14, BH);
+  }
   ctx.textBaseline = 'alphabetic';
 
-  // Encabezado
+  // Encabezado: logo del evento completo (sin deformar) y, a la derecha, hasta 2 logos más
   const L = 48, R = BW - 48;
+  const LOGO_H = 52;
+  let textX = L + 64;
   if (logo) {
-    ctx.save();
-    roundRect(ctx, L, 40, 52, 52, 14);
-    ctx.clip();
-    ctx.drawImage(logo, L, 40, 52, 52);
-    ctx.restore();
+    const w = fitContain(ctx, logo, L, 40, 150, LOGO_H, 'left');
+    textX = L + w + 12;
   } else {
     ctx.fillStyle = d.color;
     roundRect(ctx, L, 40, 52, 52, 14);
@@ -153,17 +175,24 @@ export async function drawCertificate(canvas: HTMLCanvasElement, d: CertificateD
     ctx.font = F(700, 15);
     ctx.fillText(d.acronym || '', L + 6, 40 + 46);
   }
+  let right = R;
+  for (const img of [...extraImgs].reverse()) {
+    const w = fitContain(ctx, img, right - 130, 40, 130, LOGO_H, 'right');
+    right -= w + 14;
+  }
+  const textMax = right - textX - 8;
   ctx.fillStyle = INK;
   ctx.font = F(700, 14);
-  ctx.fillText(d.eventName, L + 64, 40 + 22);
+  ctx.fillText(d.eventName, textX, 40 + 22, textMax);
   ctx.fillStyle = MUTED;
   ctx.font = F(400, 12);
-  ctx.fillText(d.organizer, L + 64, 40 + 40);
+  ctx.fillText(d.organizer, textX, 40 + 40, textMax);
   if (d.folio) {
     ctx.textAlign = 'right';
     ctx.font = '600 11px ui-monospace, Menlo, monospace';
     ctx.fillStyle = '#737989';
-    ctx.fillText(`Folio ${d.folio}`, R, 40 + 12);
+    // con logos adicionales el folio baja al pie para no encimarse
+    ctx.fillText(`Folio ${d.folio}`, R, extraImgs.length ? BH - 18 : 40 + 12);
     ctx.textAlign = 'left';
   }
 

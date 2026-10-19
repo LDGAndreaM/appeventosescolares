@@ -50,9 +50,13 @@ export default function Certificates() {
   const bodyRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    if (settingsQ.data && !settings) setSettings({ ...settingsQ.data, body_role: settingsQ.data.body_role ?? DEFAULT_ROLE_BODY });
+    if (settingsQ.data && !settings)
+      setSettings({
+        ...settingsQ.data, body_role: settingsQ.data.body_role ?? DEFAULT_ROLE_BODY,
+        background_url: settingsQ.data.background_url ?? null, extra_logos: settingsQ.data.extra_logos ?? [],
+      });
     if (settingsQ.isSuccess && !settingsQ.data && !settings)
-      setSettings({ event_id: event.id, body_activity: '', body_general: '', body_role: DEFAULT_ROLE_BODY, signers: [], show_verification: true });
+      setSettings({ event_id: event.id, body_activity: '', body_general: '', body_role: DEFAULT_ROLE_BODY, background_url: null, extra_logos: [], signers: [], show_verification: true });
   }, [settingsQ.data, settingsQ.isSuccess, settings, event.id]);
 
   const acts = useMemo(() => activities.data ?? [], [activities.data]);
@@ -92,6 +96,7 @@ export default function Certificates() {
       const base = {
         color: event.color_primary, eventName: event.name, organizer: event.organizer, acronym: event.acronym, logoUrl: event.logo_url,
         folio, personName: person.full_name, signers: settings.signers, showVerification: settings.show_verification,
+        background: settings.background_url, extraLogos: settings.extra_logos,
       };
       const vars = { person: person.full_name, eventName: event.name, start: event.start_date, end: event.end_date, role: person.role };
       if (kind === 'role') {
@@ -194,6 +199,15 @@ export default function Certificates() {
     }
   };
 
+  const uploadDesign = async (file: File | undefined, apply: (url: string) => void) => {
+    if (!file) return;
+    try {
+      apply(await uploadEventAsset(event.id, `constancias/${crypto.randomUUID()}.${file.name.split('.').pop() || 'png'}`, file));
+    } catch (e) {
+      toast(friendlyError(e), true);
+    }
+  };
+
   const uploadSignature = async (i: number, file: File | undefined) => {
     if (!file) return;
     try {
@@ -254,6 +268,43 @@ export default function Certificates() {
               {(kind === 'role' ? ROLE_FIELDS : FIELDS).map((f) => (
                 <button key={f} type="button" className="pill" disabled={!full} style={{ fontSize: 11, fontWeight: 600, padding: '3px 8px' }} onClick={() => insertField(f)}>{f}</button>
               ))}
+            </div>
+          </Field>
+          <Field label="Diseño" hint="Fondo: imagen horizontal tamaño carta (2200 × 1700 px) con el centro despejado para el texto.">
+            <div className="stack" style={{ gap: 8 }}>
+              <div className="row" style={{ justifyContent: 'space-between', fontSize: 13 }}>
+                <span className="row" style={{ gap: 8 }}>
+                  {settings.background_url && <img src={settings.background_url} alt="" style={{ width: 44, height: 34, objectFit: 'cover', borderRadius: 6, border: '1px solid var(--color-divider)' }} />}
+                  <b>Fondo</b>
+                </span>
+                {full && (
+                  <span className="row" style={{ gap: 10 }}>
+                    <label className="link" style={{ fontSize: 12 }}>
+                      {settings.background_url ? 'Cambiar' : 'Subir fondo'}
+                      <input type="file" accept="image/png,image/jpeg,image/webp" hidden onChange={(e) => uploadDesign(e.target.files?.[0], (url) => setS({ background_url: url }))} />
+                    </label>
+                    {settings.background_url && <button type="button" className="link danger" style={{ fontSize: 12 }} onClick={() => setS({ background_url: null })}>Quitar</button>}
+                  </span>
+                )}
+              </div>
+              <div className="row" style={{ justifyContent: 'space-between', fontSize: 13, alignItems: 'flex-start' }}>
+                <b>Logos adicionales</b>
+                <span className="muted" style={{ fontSize: 12 }}>{settings.extra_logos.length} de 2</span>
+              </div>
+              <div className="row" style={{ gap: 8, flexWrap: 'wrap' }}>
+                {settings.extra_logos.map((url, i) => (
+                  <div key={url} className="stack" style={{ alignItems: 'center', gap: 4 }}>
+                    <img src={url} alt={`Logo adicional ${i + 1}`} style={{ width: 72, height: 44, objectFit: 'contain', background: '#fff', border: '1px solid var(--color-divider)', borderRadius: 8, padding: 4 }} />
+                    {full && <button type="button" className="link danger" style={{ fontSize: 11 }} onClick={() => setS({ extra_logos: settings.extra_logos.filter((_, j) => j !== i) })}>Quitar</button>}
+                  </div>
+                ))}
+                {full && settings.extra_logos.length < 2 && (
+                  <label className="btn btn-secondary btn-sm" style={{ alignSelf: 'flex-start' }}>
+                    + Agregar logo
+                    <input type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp" hidden onChange={(e) => uploadDesign(e.target.files?.[0], (url) => setS({ extra_logos: [...settings.extra_logos, url].slice(0, 2) }))} />
+                  </label>
+                )}
+              </div>
             </div>
           </Field>
           <Field label="Firmas">
