@@ -27,6 +27,10 @@ export function friendlyError(e: unknown): string {
   if (/Email not confirmed/i.test(raw)) return 'Confirma tu correo antes de entrar (revisa tu bandeja).';
   if (/User already registered/i.test(raw)) return 'Ya existe una cuenta con ese correo. Inicia sesión.';
   if (/Password should be/i.test(raw)) return 'La contraseña debe tener al menos 6 caracteres.';
+  if (/dynamically imported module|Importing a module script failed|error loading dynamically/i.test(raw))
+    return 'Hay una versión nueva de Aforo. Recarga la página (Ctrl + Shift + R) e inténtalo de nuevo.';
+  if (/Tainted canvases|SecurityError/i.test(raw))
+    return 'No se pudo usar una de las imágenes (logo, fondo o firma). Vuelve a subirla e inténtalo de nuevo.';
   if (/Failed to fetch|NetworkError/i.test(raw)) return 'Sin conexión con el servidor. Revisa tu internet.';
   return MESSAGES[errorCode(e)] ?? raw;
 }
