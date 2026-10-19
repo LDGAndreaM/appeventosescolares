@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useEventCtx } from '../../layout/EventLayout';
-import { useBalances, usePackages, usePeople } from '../../lib/api';
+import { useActivities, useBalances, useInvalidateEvent, usePackages, usePeople } from '../../lib/api';
 import { money, profileLabel } from '../../lib/format';
 import { PAY_STYLE, payStatus } from '../../lib/people';
 import { participantsDataset } from '../../lib/datasets';
 import { downloadDataset } from '../../lib/export';
 import { ROLES } from '../../lib/types';
-import { Loading } from '../../components/ui';
+import { Loading, useToast } from '../../components/ui';
+import ImportPeopleModal from '../../components/ImportPeopleModal';
 import './event.css';
 
 export default function People() {
@@ -17,6 +18,10 @@ export default function People() {
   const balances = useBalances(event.id);
   const [role, setRole] = useState('Todos');
   const [q, setQ] = useState('');
+  const [importing, setImporting] = useState(false);
+  const activities = useActivities(event.id);
+  const invalidate = useInvalidateEvent(event.id);
+  const toast = useToast();
 
   if (!people.data || !packages.data || !balances.data) return <Loading />;
   const norm = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
@@ -37,6 +42,7 @@ export default function People() {
           <button className="btn btn-secondary" onClick={() => downloadDataset(participantsDataset({ people: people.data!, packages: packages.data!, balances: balances.data! }, role), 'csv', `${event.code_prefix}-participantes`)}>
             Exportar CSV
           </button>
+          <button className="btn btn-secondary" onClick={() => setImporting(true)}>Importar CSV</button>
           <Link to="nuevo" className="btn btn-primary" style={{ minWidth: 160 }}>+ Agregar persona</Link>
         </div>
       </div>
@@ -74,6 +80,19 @@ export default function People() {
           </Link>
         );
       })}
+      {importing && (
+        <ImportPeopleModal
+          eventId={event.id}
+          packages={packages.data}
+          activities={activities.data ?? []}
+          people={people.data}
+          onClose={() => setImporting(false)}
+          onDone={async (n) => {
+            await invalidate('people', 'balances', 'payments', 'enrollments', 'activity-stats');
+            toast(`${n} ${n === 1 ? 'persona importada' : 'personas importadas'}`);
+          }}
+        />
+      )}
     </>
   );
 }

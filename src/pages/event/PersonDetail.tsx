@@ -77,6 +77,8 @@ function PersonDetail() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pay, setPay] = useState({ date: todayISO(), method: 'Transferencia' as Method, amount: '' });
+  /** Abonos capturados antes de guardar a una persona nueva; se registran al guardar. */
+  const [pending, setPending] = useState<{ date: string; method: Method; amount: number }[]>([]);
 
   const draftPkg = d?.package_id ?? null;
   const pkgActs = useMemo(
@@ -112,7 +114,7 @@ function PersonDetail() {
   const isFull = (a: Activity) => a.capacity != null && !enrolledIn(a.id) && (stats.data!.get(a.id)?.enrolled ?? 0) >= a.capacity;
 
   const due = isParticipant && pkg ? pkg.price : 0;
-  const paid = (payments.data ?? []).reduce((s, p) => s + p.amount, 0);
+  const paid = (payments.data ?? []).reduce((s, p) => s + p.amount, 0) + pending.reduce((s, p) => s + p.amount, 0);
   const saldo = Math.max(due - paid, 0);
   const settled = person.data?.settled_on;
 
@@ -181,7 +183,14 @@ function PersonDetail() {
         }
         if (error) throw error;
       }
-      await invalidate('people', 'enrollments', 'activity-stats', 'balances', `person-${id}`);
+      if (pending.length && isParticipant && pkg) {
+        const { error } = await supabase.from('payments').insert(
+          pending.map((x) => ({ event_id: event.id, person_id: id, amount: x.amount, paid_on: x.date, method: x.method })),
+        );
+        if (error) throw error;
+        setPending([]);
+      }
+      await invalidate('people', 'enrollments', 'activity-stats', 'balances', 'payments', `person-${id}`);
       toast(waitlisted.length ? `Guardado. ${waitlisted.join(', ')} está lleno: quedó en lista de espera.` : andNew ? `${d.full_name.trim()} guardado. Agrega a la siguiente persona.` : 'Cambios guardados');
       if (andNew) nav(`../participantes/nuevo?${new URLSearchParams({ rol: d.role, perfil: d.profile ?? '' })}`);
       else if (!params.personId) nav(`../participantes/${id}`, { replace: true });
@@ -194,7 +203,13 @@ function PersonDetail() {
 
   const addPayment = async () => {
     const amount = Number(pay.amount);
-    if (!personId || !amount || amount <= 0) return toast('Escribe el monto del abono.', true);
+    if (!amount || amount <= 0) return toast('Escribe el monto del abono.', true);
+    if (!personId) {
+      // persona nueva: el abono se guarda junto con la ficha
+      setPending([...pending, { date: pay.date, method: pay.method, amount }]);
+      setPay({ ...pay, amount: '' });
+      return toast('Abono agregado · se registrará al guardar');
+    }
     const { error } = await supabase.from('payments').insert({ event_id: event.id, person_id: personId, amount, paid_on: pay.date, method: pay.method });
     if (error) return toast(friendlyError(error), true);
     await invalidate(`payments-${personId}`, 'payments', 'balances', 'people', `person-${personId}`);
@@ -324,8 +339,17 @@ function PersonDetail() {
                     </span>
                   </div>
                 ))}
-                {personId ? (
-                  <>
+                {pending.map((x, i) => (
+                  <div key={i} className="abono-grid" style={{ borderBottom: '1px solid var(--color-divider)' }}>
+                    <span>{dmy(x.date)}</span>
+                    <span className="ellipsis">{x.method} · <i className="muted">por guardar</i></span>
+                    <span className="row" style={{ justifyContent: 'flex-end', gap: 6 }}>
+                      <b>{money(x.amount)}</b>
+                      <button type="button" className="link" aria-label="Quitar abono" title="Quitar abono" style={{ color: 'var(--color-neutral-500)' }} onClick={() => setPending(pending.filter((_, j) => j !== i))}>×</button>
+                    </span>
+                  </div>
+                ))}
+                <>
                     <div className="abono-grid">
                       <input className="input input-xs" type="date" value={pay.date} onChange={(e) => setPay({ ...pay, date: e.target.value })} aria-label="Fecha del abono" />
                       <select className="input input-xs" value={pay.method} onChange={(e) => setPay({ ...pay, method: e.target.value as Method })} aria-label="Método">
@@ -333,11 +357,9 @@ function PersonDetail() {
                       </select>
                       <input className="input input-xs" type="number" min={0} step="0.01" placeholder="$0" value={pay.amount} onChange={(e) => setPay({ ...pay, amount: e.target.value })} style={{ textAlign: 'right' }} aria-label="Monto" />
                     </div>
-                    <button type="button" className="btn btn-outline btn-sm btn-block" disabled={!person.data?.package_id} onClick={addPayment}>+ Registrar abono</button>
-                  </>
-                ) : (
-                  <p className="field-hint" style={{ paddingTop: 10 }}>Guarda la ficha para registrar abonos.</p>
-                )}
+                    <button type="button" className="btn btn-outline btn-sm btn-block" disabled={personId ? !person.data?.package_id : !d.package_id} onClick={addPayment}>+ Registrar abono</button>
+                    {!d.package_id && <p className="field-hint" style={{ paddingTop: 6 }}>Elige un paquete para registrar abonos.</p>}
+                </>
               </div>
               <div className="row" style={{ justifyContent: 'space-between', fontSize: 13, paddingTop: 4 }}>
                 <span>Fecha de liquidación</span>
