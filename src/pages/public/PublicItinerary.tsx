@@ -22,7 +22,7 @@ export default function PublicItinerary() {
   const list = ev.activities.filter((a) => a.day === day);
 
   return (
-    <PublicShell color={ev.color_primary}>
+    <PublicShell color={ev.color_primary} color2={ev.color_secondary}>
       <div className="stack" style={{ padding: '20px 20px 14px', gap: 10, borderBottom: '1px solid var(--color-divider)' }}>
         <div className="row" style={{ justifyContent: 'space-between', fontSize: 12, fontWeight: 600 }}>
           <span className="ellipsis">{ev.name}</span>

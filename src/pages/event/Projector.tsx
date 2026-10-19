@@ -18,7 +18,7 @@ export default function Projector() {
   const st = stats.data?.get(act.id);
 
   return (
-    <div className="ev-scope" style={{ ...evStyle(event.data.color_primary), minHeight: '100vh', background: 'var(--ev)', color: '#fff', display: 'flex', flexDirection: 'column', padding: '3vh 4vw', gap: '3vh' }}>
+    <div className="ev-scope" style={{ ...evStyle(event.data.color_primary, event.data.color_secondary), minHeight: '100vh', background: 'var(--ev)', color: '#fff', display: 'flex', flexDirection: 'column', padding: '3vh 4vw', gap: '3vh' }}>
       <div className="row" style={{ justifyContent: 'space-between' }}>
         <span style={{ fontSize: 'clamp(14px, 1.6vw, 22px)', fontWeight: 600, opacity: 0.9 }}>{event.data.name} · {act.type}</span>
         <div className="row" style={{ gap: 16 }}>

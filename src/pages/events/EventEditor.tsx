@@ -41,7 +41,7 @@ export default function EventEditor() {
   };
 
   return (
-    <div className="ev-scope" style={{ ...evStyle(s.color), minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <div className="ev-scope" style={{ ...evStyle(s.color, s.color2), minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Topbar
         right={
           <div className="row" style={{ gap: 12 }}>

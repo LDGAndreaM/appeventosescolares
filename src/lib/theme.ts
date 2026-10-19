@@ -12,9 +12,35 @@ export const PALETTES: [string, string, string, string][] = [
 
 export const DEFAULT_EVENT_COLOR = '#3047c8';
 
-/** Variables CSS para teñir un bloque con el color del evento (ver .ev-scope en app.css). */
-export const evStyle = (color: string | null | undefined): CSSProperties =>
-  ({ '--ev': color || DEFAULT_EVENT_COLOR }) as CSSProperties;
+/** ¿Es un color claro? (luminancia relativa) — decide si el texto encima va oscuro. */
+export function isLight(hex: string) {
+  const m = /^#?([0-9a-f]{6})$/i.exec(hex);
+  if (!m) return false;
+  const n = parseInt(m[1], 16);
+  const lin = (c: number) => ((c /= 255) <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
+  const L = 0.2126 * lin((n >> 16) & 255) + 0.7152 * lin((n >> 8) & 255) + 0.0722 * lin(n & 255);
+  return L > 0.45;
+}
+
+/** Oscurece un color mezclándolo con negro (para usar un acento claro como texto sobre blanco). */
+export function darken(hex: string, amount: number) {
+  const n = parseInt(hex.replace('#', ''), 16);
+  const f = (c: number) => Math.round(c * (1 - amount)).toString(16).padStart(2, '0');
+  return `#${f((n >> 16) & 255)}${f((n >> 8) & 255)}${f(n & 255)}`;
+}
+
+/** Color de acento legible como texto sobre fondo blanco. */
+export const accentText = (hex: string) => (isLight(hex) ? darken(hex, 0.45) : hex);
+
+/**
+ * Variables CSS para teñir un bloque con los colores del evento (ver .ev-scope en app.css).
+ * El secundario es el acento (talleres, barras de progreso, detalles); si no hay, se usa el principal.
+ */
+export const evStyle = (color: string | null | undefined, color2?: string | null): CSSProperties => {
+  const ev = color || DEFAULT_EVENT_COLOR;
+  const ev2 = color2 && /^#[0-9a-f]{6}$/i.test(color2) ? color2 : ev;
+  return { '--ev': ev, '--ev2': ev2, '--ev2-ink': isLight(ev2) ? '#1b1f2b' : '#fff', '--ev2-text': accentText(ev2) } as CSSProperties;
+};
 
 export interface TypeStyle {
   bg: string;
@@ -30,7 +56,7 @@ export function typeStyle(type: string): TypeStyle {
     case 'Conferencia':
       return { bg: 'var(--ev)', fg: '#fff', bd: 'var(--ev)' };
     case 'Taller':
-      return { bg: 'var(--ev-100)', fg: 'var(--ev-800)', bd: 'var(--ev)' };
+      return { bg: 'var(--ev2-100)', fg: 'var(--ev2-800)', bd: 'var(--ev2)' };
     case 'Comida':
       return { bg: 'var(--color-neutral-200)', fg: 'var(--color-text)', bd: 'var(--color-neutral-500)' };
     case 'Concierto':

@@ -1,5 +1,6 @@
 import { paintQR, certificateUrl } from './qr';
 import type { Signer } from './types';
+import { accentText } from './theme';
 import { durationLabel, longDate, rangeLong, dayShort, timeRange } from './format';
 
 /** Medidas base del diseño (vista previa de 3a); se escala al exportar. */
@@ -8,6 +9,8 @@ const BH = 513;
 
 export interface CertificateData {
   color: string;
+  /** Color secundario (acento): franja lateral, título y viñetas. */
+  accent?: string | null;
   eventName: string;
   organizer: string;
   acronym: string;
@@ -200,7 +203,7 @@ export async function drawCertificate(canvas: HTMLCanvasElement, d: CertificateD
     const k = Math.max(BW / bg.width, BH / bg.height);
     ctx.drawImage(bg, (BW - bg.width * k) / 2, (BH - bg.height * k) / 2, bg.width * k, bg.height * k);
   } else {
-    ctx.fillStyle = d.color;
+    ctx.fillStyle = d.accent || d.color;
     ctx.fillRect(0, 0, 14, BH);
   }
   ctx.textBaseline = 'alphabetic';
@@ -252,7 +255,7 @@ export async function drawCertificate(canvas: HTMLCanvasElement, d: CertificateD
   const top = 92, bottom = BH - 40 - 64 - (sigs.some(Boolean) ? SIG_EXTRA : 0);
   let y = top + Math.max(12, (bottom - top - blockH) / 2);
 
-  ctx.fillStyle = d.color;
+  ctx.fillStyle = d.accent ? accentText(d.accent) : d.color;
   ctx.font = F(700, 13);
   ctx.letterSpacing = '1.8px';
   ctx.fillText((d.title ?? 'Constancia de asistencia').toUpperCase(), L, (y += 13));
@@ -278,7 +281,7 @@ export async function drawCertificate(canvas: HTMLCanvasElement, d: CertificateD
     ctx.font = F(400, listSize);
     for (const item of list) {
       y += listSize * 1.5;
-      ctx.fillStyle = d.color;
+      ctx.fillStyle = d.accent || d.color;
       ctx.beginPath();
       ctx.arc(L + 3, y - listSize * 0.35, 2.5, 0, Math.PI * 2);
       ctx.fill();

@@ -3,9 +3,9 @@ import { evStyle } from '../../lib/theme';
 import { AforoLogo, Loading, MonoBox } from '../../components/ui';
 
 /** Contenedor móvil teñido con el color del evento para las páginas públicas. */
-export function PublicShell({ color, children }: { color?: string | null; children: ReactNode }) {
+export function PublicShell({ color, color2, children }: { color?: string | null; color2?: string | null; children: ReactNode }) {
   return (
-    <div className="ev-scope" style={{ ...evStyle(color), background: 'var(--color-bg)', minHeight: '100vh' }}>
+    <div className="ev-scope" style={{ ...evStyle(color, color2), background: 'var(--color-bg)', minHeight: '100vh' }}>
       <div className="mobile-page">{children}</div>
     </div>
   );
@@ -20,6 +20,7 @@ export function PublicHero(props: { label: string; logo?: string | null; acronym
       </div>
       {props.kicker && <span style={{ fontSize: 12, fontWeight: 600, opacity: 0.9, marginTop: 6 }}>{props.kicker}</span>}
       {props.acronym !== undefined && <MonoBox logo={props.logo} text={props.acronym} size={48} outline={!props.logo} />}
+      <span aria-hidden="true" style={{ width: 48, height: 6, borderRadius: 99, background: 'var(--ev2)', marginTop: 2 }} />
       <div className="hero-title">{props.title}</div>
       <div style={{ fontSize: 13 }}>{props.sub}</div>
     </div>

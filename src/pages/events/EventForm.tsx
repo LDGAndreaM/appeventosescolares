@@ -221,7 +221,7 @@ export default function EventForm({ s, set, disabled }: { s: EventFormState; set
           </div>
           <div style={{ padding: '12px 14px', display: 'flex', gap: 8, background: '#fff' }}>
             <span className="tag" style={{ background: 'var(--ev)', color: '#fff', fontSize: 12 }}>Conferencia</span>
-            <span className="tag" style={{ background: 'var(--ev-100)', color: 'var(--ev-800)', borderColor: 'var(--ev)', fontSize: 12 }}>Taller</span>
+            <span className="tag" style={{ background: 'var(--ev2-100)', color: 'var(--ev2-800)', borderColor: 'var(--ev2)', fontSize: 12 }}>Taller</span>
           </div>
         </div>
       </section>

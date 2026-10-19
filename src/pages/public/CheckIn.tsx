@@ -19,6 +19,7 @@ interface CheckinActivity {
   event_name: string;
   acronym: string;
   color_primary: string;
+  color_secondary?: string | null;
   logo_url: string | null;
 }
 
@@ -68,7 +69,7 @@ export default function CheckIn() {
   };
 
   return (
-    <PublicShell color={a.color_primary}>
+    <PublicShell color={a.color_primary} color2={a.color_secondary}>
       <PublicHero
         label="Asistencia"
         kicker={`${a.type} · ${dayShort(a.day)} · ${timeRange(a.starts_at, a.ends_at)}`}

@@ -96,7 +96,7 @@ export default function Certificates() {
     () => (person: Person, folio: string | null): CertificateData | null => {
       if (!settings) return null;
       const base = {
-        color: event.color_primary, eventName: event.name, organizer: event.organizer, acronym: event.acronym, logoUrl: event.logo_url,
+        color: event.color_primary, accent: event.color_secondary, eventName: event.name, organizer: event.organizer, acronym: event.acronym, logoUrl: event.logo_url,
         folio, personName: person.full_name, signers: settings.signers, showVerification: settings.show_verification,
         background: settings.background_url, extraLogos: settings.extra_logos,
       };

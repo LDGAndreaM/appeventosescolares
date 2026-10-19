@@ -41,7 +41,7 @@ export default function Register() {
 
   if (done)
     return (
-      <PublicShell color={ev.color_primary}>
+      <PublicShell color={ev.color_primary} color2={ev.color_secondary}>
         <PublicHero label="Registro" logo={ev.logo_url} acronym={ev.acronym} title={ev.name} sub={`${rangeShort(ev.start_date, ev.end_date)}${ev.venue ? ` · ${ev.venue}` : ''}`} />
         <div className="stack" style={{ padding: '24px 20px', gap: 14, flex: 1 }}>
           <div className="card row" style={{ padding: 18, gap: 14 }}>
@@ -119,7 +119,7 @@ export default function Register() {
   const closed = !ev.registration_open;
 
   return (
-    <PublicShell color={ev.color_primary}>
+    <PublicShell color={ev.color_primary} color2={ev.color_secondary}>
       <PublicHero label="Registro" logo={ev.logo_url} acronym={ev.acronym} title={ev.name} sub={`${rangeShort(ev.start_date, ev.end_date)}${ev.venue ? ` · ${ev.venue}` : ''}`} />
       {closed ? (
         <div className="stack" style={{ padding: '24px 20px', gap: 14 }}>

@@ -60,7 +60,7 @@ export default function EventLayout() {
     loc.pathname.includes(`/${path}`) || (path === 'programa' && loc.pathname.includes('/asistencia'));
 
   return (
-    <div className={'event-shell ev-scope' + (navOpen ? ' nav-open' : '')} style={evStyle(ev.color_primary)}>
+    <div className={'event-shell ev-scope' + (navOpen ? ' nav-open' : '')} style={evStyle(ev.color_primary, ev.color_secondary)}>
       <aside className="sidebar" aria-label="Menú del evento">
         <div className="sidebar-brand">
           <MonoBox logo={ev.logo_url} text={ev.acronym} size={44} />

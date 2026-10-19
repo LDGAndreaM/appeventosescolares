@@ -67,7 +67,7 @@ export default function Settings() {
       </div>
       {error && <div className="alert" style={{ margin: '16px 36px 0' }}>{error}</div>}
       {/* la vista previa toma el color que se está editando */}
-      <div className="ev-scope" style={evStyle(s.color)}>
+      <div className="ev-scope" style={evStyle(s.color, s.color2)}>
         <EventForm s={s} set={set} disabled={!full} />
       </div>
       <div className="page-body" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16, borderTop: '1px solid var(--color-divider)' }}>

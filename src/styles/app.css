@@ -36,6 +36,9 @@
   --af-green-200: #bfeedd;
 
   --ev: #3047c8;
+  --ev2: #3047c8;
+  --ev2-ink: #fff;
+  --ev2-text: #3047c8;
   --shadow-card: 0 10px 30px rgba(27, 31, 43, 0.1);
 }
 
@@ -47,6 +50,9 @@
   --ev-200: color-mix(in srgb, var(--ev) 22%, #fff);
   --ev-700: color-mix(in srgb, var(--ev) 78%, #000);
   --ev-800: color-mix(in srgb, var(--ev) 58%, #000);
+  /* color secundario (acento) */
+  --ev2-100: color-mix(in srgb, var(--ev2) 16%, #fff);
+  --ev2-800: color-mix(in srgb, var(--ev2) 50%, #000);
 }
 .af-scope {
   --ev: var(--af);
@@ -241,7 +247,7 @@ button.pill:hover { border-color: var(--color-neutral-500); }
 .stat.sm { padding: 18px 20px; gap: 2px; }
 .stat.sm .v { font-size: 32px; line-height: 1.1; }
 .progress { height: 6px; border-radius: 99px; overflow: hidden; background: var(--color-neutral-200); }
-.progress > div { height: 100%; border-radius: 99px; background: var(--ev); transition: width 0.3s; }
+.progress > div { height: 100%; border-radius: 99px; background: var(--ev2); transition: width 0.3s; }
 .progress.lg { height: 8px; }
 .info-box {
   background: var(--ev-100); border: 1.5px solid var(--ev); border-radius: 12px; padding: 10px 12px;

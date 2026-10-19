@@ -14,7 +14,7 @@ interface Verified {
   issued_at: string;
   kind?: 'attendance' | 'role';
   person: { full_name: string; role?: string };
-  event: { name: string; acronym: string; organizer: string; logo_url: string | null; color_primary: string; start_date: string; end_date: string };
+  event: { name: string; acronym: string; organizer: string; logo_url: string | null; color_primary: string; color_secondary?: string | null; start_date: string; end_date: string };
   activity: { type: string; name: string; speaker: string; day: string; starts_at: string; ends_at: string } | null;
   attended: { type: string; name: string; day: string; starts_at: string; ends_at: string }[] | null;
   given?: { type: string; name: string; day: string; starts_at: string; ends_at: string }[] | null;
@@ -37,7 +37,7 @@ export default function CertificateView() {
   const c = q.data;
   const data: CertificateData | null = c
     ? {
-        color: c.event.color_primary, eventName: c.event.name, organizer: c.event.organizer, acronym: c.event.acronym, logoUrl: c.event.logo_url,
+        color: c.event.color_primary, accent: c.event.color_secondary, eventName: c.event.name, organizer: c.event.organizer, acronym: c.event.acronym, logoUrl: c.event.logo_url,
         folio: c.folio, personName: c.person.full_name, signers: c.settings.signers, showVerification: c.settings.show_verification,
         background: c.settings.background_url ?? null, extraLogos: c.settings.extra_logos ?? [],
         ...(c.kind === 'role'
@@ -66,7 +66,7 @@ export default function CertificateView() {
   if (!c || !data) return <PublicMessage title="Constancia no encontrada" text={`No existe una constancia con el folio ${folio.toUpperCase()}. Revisa que esté bien escrito.`} />;
 
   return (
-    <PublicShell color={c.event.color_primary}>
+    <PublicShell color={c.event.color_primary} color2={c.event.color_secondary}>
       <PublicHero label="Verificación" logo={c.event.logo_url} acronym={c.event.acronym} title={c.event.name} sub={c.event.organizer} />
       <div className="stack" style={{ padding: '24px 20px', gap: 14, flex: 1 }}>
         <div className="card row" style={{ padding: 18, gap: 14 }}>
