@@ -19,6 +19,7 @@ export default function EventEditor() {
   const [s, setS] = useState<EventFormState>(initialFormState());
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [createdId, setCreatedId] = useState<string | null>(null);
   const set = (p: Partial<EventFormState>) => setS((x) => ({ ...x, ...p }));
 
   const save = async (status: 'draft' | 'active') => {
@@ -27,9 +28,10 @@ export default function EventEditor() {
     setBusy(true);
     setError(null);
     try {
-      const id = await saveEvent({ ...s, status });
+      const { id, logoError } = await saveEvent({ ...s, status }, createdId ? { id: createdId } : undefined, setCreatedId);
       await qc.invalidateQueries({ queryKey: qk.myEvents });
-      toast(status === 'draft' ? 'Borrador guardado' : 'Evento creado');
+      if (logoError) toast('Evento guardado, pero no se pudo subir el logo. Intenta de nuevo en Ajustes del evento.', true);
+      else toast(status === 'draft' ? 'Borrador guardado' : 'Evento creado');
       nav(status === 'draft' ? '/eventos' : `/evento/${id}/paquetes`);
     } catch (e) {
       setError(friendlyError(e));

@@ -59,8 +59,16 @@ export function validate(s: EventFormState): string | null {
   return null;
 }
 
-/** Crea o actualiza el evento con sus días y logo. Devuelve el id. */
-export async function saveEvent(s: EventFormState, existing?: EventRow): Promise<string> {
+/**
+ * Crea o actualiza el evento con sus días y logo. `onCreated` avisa el id en cuanto el evento
+ * existe, para que un reintento lo actualice en vez de duplicarlo. Si solo falla el logo,
+ * el evento queda guardado y se devuelve `logoError`.
+ */
+export async function saveEvent(
+  s: EventFormState,
+  existing?: Pick<EventRow, 'id'>,
+  onCreated?: (id: string) => void,
+): Promise<{ id: string; logoError?: string }> {
   const acronym = (s.acronym.trim() || initials(s.name)).slice(0, 6);
   const fields = {
     name: s.name.trim(), acronym, organizer: s.organizer.trim(), description: s.description.trim(), venue: s.venue.trim(),
@@ -76,6 +84,7 @@ export async function saveEvent(s: EventFormState, existing?: EventRow): Promise
     const slug = `${slugify(s.name).slice(0, 48)}-${Math.random().toString(36).slice(2, 6)}`;
     const { error } = await supabase.from('events').insert({ id, slug, code_prefix: prefix, ...fields });
     if (error) throw error;
+    onCreated?.(id);
   } else {
     const { error } = await supabase.from('events').update(fields).eq('id', id);
     if (error) throw error;
@@ -90,12 +99,17 @@ export async function saveEvent(s: EventFormState, existing?: EventRow): Promise
     if (error) throw error;
   }
   if (s.logoFile) {
-    const ext = s.logoFile.name.split('.').pop()?.toLowerCase() || 'png';
-    const url = await uploadEventAsset(id, `logo.${ext}`, s.logoFile);
-    const { error } = await supabase.from('events').update({ logo_url: url }).eq('id', id);
-    if (error) throw error;
+    try {
+      const ext = s.logoFile.name.split('.').pop()?.toLowerCase() || 'png';
+      // nombre nuevo en cada subida: solo requiere permiso de crear archivo, no de reemplazar
+      const url = await uploadEventAsset(id, `logo-${Date.now()}.${ext}`, s.logoFile);
+      const { error } = await supabase.from('events').update({ logo_url: url }).eq('id', id);
+      if (error) throw error;
+    } catch (e) {
+      return { id, logoError: (e as Error).message };
+    }
   }
-  return id;
+  return { id };
 }
 
 export default function EventForm({ s, set, disabled }: { s: EventFormState; set: (p: Partial<EventFormState>) => void; disabled?: boolean }) {

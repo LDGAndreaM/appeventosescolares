@@ -37,7 +37,8 @@ export default function Settings() {
     setBusy(true);
     setError(null);
     try {
-      await saveEvent(s, event);
+      const { logoError } = await saveEvent(s, event);
+      if (logoError) setError(`Los cambios se guardaron, pero no se pudo subir el logo: ${friendlyError(new Error(logoError))}`);
       await invalidate();
       await qc.invalidateQueries({ queryKey: qk.myEvents });
       toast('Cambios guardados');

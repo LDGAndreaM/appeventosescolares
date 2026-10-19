@@ -10,8 +10,8 @@ export default function Topbar({ right }: { right?: ReactNode }) {
   return (
     <header className="topbar">
       <Link to="/eventos" className="brand">
-        <AforoLogo />
-        <span>Aforo</span>
+        <AforoLogo size={40} radius={10} />
+        <span style={{ fontSize: 22 }}>Aforo</span>
       </Link>
       {right ?? (
         <nav className="topbar-nav">

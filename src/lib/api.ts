@@ -266,10 +266,10 @@ export async function mutate<T>(p: PromiseLike<{ data: T | null; error: { messag
 /** Sube un archivo al bucket del evento y devuelve su URL pública. */
 export async function uploadEventAsset(eventId: string, path: string, file: File) {
   const full = `${eventId}/${path}`;
-  const { error } = await supabase.storage.from('event-assets').upload(full, file, { upsert: true, cacheControl: '60' });
+  const { error } = await supabase.storage.from('event-assets').upload(full, file, { cacheControl: '3600' });
   if (error) throw new Error(error.message);
   const { data } = supabase.storage.from('event-assets').getPublicUrl(full);
-  return `${data.publicUrl}?v=${Date.now()}`;
+  return data.publicUrl;
 }
 
 /** Invoca una Edge Function devolviendo el cuerpo JSON incluso en errores HTTP. */
