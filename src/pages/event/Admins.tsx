@@ -42,7 +42,7 @@ export default function Admins() {
     setError(null);
     try {
       const r = await callFunction<{ created: boolean; emailed: boolean; already: boolean }>('invite-admin', {
-        event_id: event.id, full_name: name, email, password, permission: perm,
+        event_id: event.id, full_name: name, email, password, permission: perm, notify: false,
       });
       if (r.already) {
         setError('Esa persona ya es administradora de este evento.');
@@ -158,7 +158,7 @@ export default function Admins() {
               </div>
             </Field>
             {error && <div className="alert">{error}</div>}
-            <button className="btn btn-primary" disabled={busy}>{busy ? 'Enviando…' : 'Enviar invitación por correo'}</button>
+            <button className="btn btn-primary" disabled={busy}>{busy ? 'Agregando…' : 'Agregar administrador'}</button>
           </form>
         )}
       </aside>
@@ -169,18 +169,14 @@ export default function Admins() {
           {result.created ? (
             <>
               <p className="muted" style={{ fontSize: 14 }}>
-                {result.emailed
-                  ? 'Le enviamos estos datos por correo. Al entrar le pediremos cambiar la contraseña.'
-                  : 'El envío de correos no está configurado. Comparte estos datos; al entrar le pediremos cambiar la contraseña.'}
+                Compártele estos datos (por WhatsApp, mensaje o en persona). Entra en {window.location.host}; al hacerlo por primera vez le pediremos cambiar la contraseña.
               </p>
               <div className="card mono" style={{ background: 'var(--color-neutral-100)', padding: '12px 14px', fontSize: 14 }}>
                 {result.email}<br />{result.password}
               </div>
-              {!result.emailed && (
-                <button className="btn btn-secondary" style={{ alignSelf: 'flex-start' }} onClick={() => { void navigator.clipboard.writeText(`${window.location.origin}/entrar\n${result.email}\n${result.password}`); toast('Datos copiados'); }}>
-                  Copiar datos de acceso
-                </button>
-              )}
+              <button className="btn btn-secondary" style={{ alignSelf: 'flex-start' }} onClick={() => { void navigator.clipboard.writeText(`Acceso a Aforo · ${event.name}\n${window.location.origin}/entrar\nCorreo: ${result.email}\nContraseña temporal: ${result.password}`); toast('Datos copiados'); }}>
+                Copiar datos de acceso
+              </button>
             </>
           ) : (
             <p className="muted" style={{ fontSize: 14 }}>Ya tenía cuenta en Aforo: entra con su correo y contraseña de siempre y verá este evento en «Mis eventos».</p>

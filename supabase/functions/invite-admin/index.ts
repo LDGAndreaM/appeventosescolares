@@ -10,7 +10,7 @@ Deno.serve(async (req) => {
     const caller = await callerClient(req);
     if (!caller) return json({ error: 'UNAUTHORIZED' }, 401);
 
-    const { event_id, full_name, email, password, permission } = await req.json();
+    const { event_id, full_name, email, password, permission, notify } = await req.json();
     const cleanEmail = String(email ?? '').trim().toLowerCase();
     if (!event_id || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(cleanEmail)) return json({ error: 'INVALID_EMAIL' }, 400);
     if (!['full', 'registration'].includes(permission)) return json({ error: 'INVALID_PERMISSION' }, 400);
@@ -46,7 +46,8 @@ Deno.serve(async (req) => {
     if (insErr) return json({ error: 'INSERT_FAILED', message: insErr.message }, 400);
 
     let emailed = false;
-    if (emailConfigured()) {
+    // el correo es opcional: solo si la app lo pide y está configurado; si falla, la invitación sigue siendo válida
+    if (notify === true && emailConfigured()) try {
       const appUrl = Deno.env.get('APP_URL') ?? '';
       const access = permission === 'full' ? 'Acceso completo' : 'Registro y pagos';
       const creds = created
@@ -67,6 +68,8 @@ Deno.serve(async (req) => {
         }),
       });
       emailed = true;
+    } catch (e) {
+      console.error('invite email failed', e);
     }
     return json({ created, emailed, already: false });
   } catch (e) {

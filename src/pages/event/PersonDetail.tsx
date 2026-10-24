@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useEventCtx } from '../../layout/EventLayout';
 import {
-  callFunction, useActivities, useActivityStats, useBalances, useEnrollments, useInvalidateEvent, usePackages, usePayments, usePerson,
+  useActivities, useActivityStats, useBalances, useEnrollments, useInvalidateEvent, usePackages, usePayments, usePerson,
 } from '../../lib/api';
 import { supabase, errorCode } from '../../lib/supabase';
 import { friendlyError } from '../../lib/messages';
@@ -224,15 +224,6 @@ function PersonDetail() {
     await invalidate(`payments-${personId}`, 'payments', 'balances', 'people', `person-${personId}`);
   };
 
-  const sendReceipt = async () => {
-    try {
-      await callFunction('send-mail', { kind: 'receipt', person_id: personId });
-      toast('Comprobante enviado');
-    } catch (err) {
-      toast(friendlyError(err), true);
-    }
-  };
-
   const removePerson = async () => {
     if (!personId || !window.confirm(`¿Eliminar a ${d.full_name}? También se borran sus abonos, inscripciones y asistencias.`)) return;
     const { error } = await supabase.from('people').delete().eq('id', personId);
@@ -249,7 +240,6 @@ function PersonDetail() {
           <h2>{d.full_name || 'Nueva persona'}</h2>
         </div>
         <div className="page-actions">
-          {personId && isParticipant && pkg && <button className="btn btn-secondary" onClick={sendReceipt}>Enviar comprobante</button>}
           {personId ? (
             <Link to={`../participantes/nuevo?${new URLSearchParams({ rol: d.role, perfil: d.profile ?? '' })}`} className="btn btn-secondary">+ Agregar otra persona</Link>
           ) : (

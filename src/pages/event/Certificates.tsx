@@ -1,14 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useEventCtx } from '../../layout/EventLayout';
 import {
-  callFunction, uploadEventAsset, useActivities, useAttendance, useCertSettings, useCertificates, useEnrollments, useInvalidateEvent,
+  uploadEventAsset, useActivities, useAttendance, useCertSettings, useCertificates, useEnrollments, useInvalidateEvent,
   usePeople,
 } from '../../lib/api';
 import { supabase } from '../../lib/supabase';
 import { friendlyError } from '../../lib/messages';
 import { dayShort, durationLabel, longDate, shortDate, todayISO } from '../../lib/format';
 import { activitiesGivenBy, activityLine, certificatesPdf, downloadBlob, drawCertificate, renderTemplate, type CertificateData } from '../../lib/certificate';
-import { certificateUrl } from '../../lib/qr';
 import { attendanceRows } from '../../lib/datasets';
 import { ROLES, type Activity, type Certificate, type CertificateSettings, type Person, type Signer } from '../../lib/types';
 import { Field, Loading, SettingRow, Toggle, useToast } from '../../components/ui';
@@ -170,37 +169,6 @@ export default function Certificates() {
     }
   };
 
-  const sendAll = async () => {
-    if (!selected.length) return;
-    setBusy('Preparando…');
-    let sent = 0;
-    try {
-      const issued = await issue();
-      for (const r of selected) {
-        const cert = issued.find((c) => c.person_id === r.person.id);
-        const d = cert && dataFor(r.person, cert.folio);
-        if (!cert || !d) continue;
-        setBusy(`Enviando ${sent + 1} de ${selected.length}…`);
-        const pdf = await certificatesPdf([d]);
-        const others = certs.data!
-          .filter((c) => c.person_id === r.person.id && c.id !== cert.id && c.activity_id && c.kind === 'attendance')
-          .map((c) => ({ name: acts.find((a) => a.id === c.activity_id)?.name ?? '', url: certificateUrl(c.folio) }));
-        await callFunction('send-mail', {
-          kind: 'certificate', certificate_id: cert.id, pdf_base64: pdf.output('datauristring').split(',')[1],
-          duration: act && kind === 'activity' ? durationLabel(act.starts_at, act.ends_at) : '', verify_url: certificateUrl(cert.folio), others,
-          detail: kind === 'role' ? `Constancia de participación como ${r.person.role.toLowerCase()}` : undefined,
-        });
-        sent++;
-      }
-      toast(`${sent} constancias enviadas`);
-    } catch (e) {
-      toast(`${sent ? `Se enviaron ${sent}. ` : ''}${friendlyError(e)}`, true);
-    } finally {
-      setBusy(null);
-      await invalidate('certificates');
-    }
-  };
-
   const uploadDesign = async (picked: File | undefined, apply: (url: string) => void, opts: CropOptions) => {
     if (!picked) return;
     const file = await cropper.crop(picked, opts);
@@ -235,9 +203,8 @@ export default function Certificates() {
           <h2>Constancias</h2>
         </div>
         <div className="page-actions">
-          <button className="btn btn-secondary" disabled={!!busy || !selected.length} onClick={downloadAll}>Descargar todas (PDF)</button>
-          <button className="btn btn-primary" disabled={!!busy || !selected.length} onClick={sendAll}>
-            {busy ?? `Enviar ${selected.length} ${selected.length === 1 ? 'constancia' : 'constancias'} por correo`}
+          <button className="btn btn-primary" disabled={!!busy || !selected.length} onClick={downloadAll}>
+            {busy ?? `Descargar ${selected.length} ${selected.length === 1 ? 'constancia' : 'constancias'} (PDF)`}
           </button>
         </div>
       </div>
