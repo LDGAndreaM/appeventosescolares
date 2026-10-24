@@ -129,13 +129,14 @@ function PersonDetail() {
 
   /** Guarda la persona y sincroniza sus inscripciones con el paquete y las elecciones. */
   const save = async (andNew = false) => {
-    if (!d.full_name.trim() || !d.email.trim()) return setError('Escribe nombre y correo.');
+    if (!d.full_name.trim()) return setError('Escribe el nombre.');
+    if (d.email.trim() && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(d.email.trim())) return setError('El correo no es válido (o déjalo vacío).');
     if (isParticipant && d.profile === 'Estudiante' && !d.career.trim()) return setError('Elige la carrera del estudiante.');
     setBusy(true);
     setError(null);
     try {
       const row = {
-        event_id: event.id, full_name: d.full_name.trim(), email: d.email.trim(), role: d.role, profile: d.profile,
+        event_id: event.id, full_name: d.full_name.trim(), email: d.email.trim() || null, role: d.role, profile: d.profile,
         career: d.profile === 'Estudiante' ? d.career.trim() || null : null,
         semester: d.profile === 'Estudiante' ? d.semester : null,
         package_id: isParticipant ? d.package_id : null, amount_due: due,
@@ -253,7 +254,7 @@ function PersonDetail() {
         <section>
           <h5>Datos</h5>
           <Field label="Nombre"><input className="input input-sm" value={d.full_name} onChange={(e) => set({ full_name: e.target.value })} /></Field>
-          <Field label="Correo"><input className="input input-sm" type="email" value={d.email} onChange={(e) => set({ email: e.target.value })} /></Field>
+          <Field label="Correo (opcional)" hint="Se usa para el QR de asistencia y para enviarle su constancia."><input className="input input-sm" type="email" value={d.email} onChange={(e) => set({ email: e.target.value })} /></Field>
           <Field label="Rol en el evento">
             <select className="input input-sm" value={d.role} onChange={(e) => set({ role: e.target.value as Role })}>
               {ROLES.map((r) => <option key={r}>{r}</option>)}

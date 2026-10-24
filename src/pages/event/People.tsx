@@ -27,7 +27,7 @@ export default function People() {
   const norm = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
   const term = norm(q.trim());
   const list = people.data.filter(
-    (p) => (role === 'Todos' || p.role === role) && (!term || norm(p.full_name).includes(term) || p.email.includes(term)),
+    (p) => (role === 'Todos' || p.role === role) && (!term || norm(p.full_name).includes(term) || (p.email ?? '').includes(term)),
   );
   const chips = [['Todos', people.data.length] as const, ...ROLES.map((r) => [r, people.data!.filter((p) => p.role === r).length] as const)];
 
@@ -69,7 +69,7 @@ export default function People() {
           <Link key={p.id} to={p.id} className="trow people-grid">
             <div style={{ minWidth: 0 }}>
               <div className="cell-title">{p.full_name}</div>
-              <div className="cell-sub ellipsis">{p.email}</div>
+              <div className="cell-sub ellipsis">{p.email ?? 'Sin correo'}</div>
             </div>
             <span className="tag tag-outline" style={{ borderRadius: 12 }}>{p.role}</span>
             <span style={{ fontSize: 13 }}>{profileLabel(p)}</span>

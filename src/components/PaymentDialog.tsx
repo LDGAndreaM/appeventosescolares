@@ -28,7 +28,7 @@ export default function PaymentDialog(props: {
     const t = q.trim().toLowerCase();
     return props.people
       .filter((p) => p.package_id)
-      .filter((p) => !t || p.full_name.toLowerCase().includes(t) || p.email.includes(t))
+      .filter((p) => !t || p.full_name.toLowerCase().includes(t) || (p.email ?? '').includes(t))
       .slice(0, 8);
   }, [q, props.people]);
 

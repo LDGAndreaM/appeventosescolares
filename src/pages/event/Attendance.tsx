@@ -252,7 +252,7 @@ function ManualMark(props: {
   const list = props.people
     .filter((p) => !props.attended.has(p.id))
     .filter((p) => !props.onlyRegistered || props.enrolled.has(p.id))
-    .filter((p) => !t || p.full_name.toLowerCase().includes(t) || p.email.includes(t))
+    .filter((p) => !t || p.full_name.toLowerCase().includes(t) || (p.email ?? '').includes(t))
     .sort((a, b) => Number(props.enrolled.has(b.id)) - Number(props.enrolled.has(a.id)))
     .slice(0, 10);
   return (

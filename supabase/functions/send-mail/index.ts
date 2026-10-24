@@ -24,6 +24,8 @@ Deno.serve(async (req) => {
       if (error || !cert) return json({ error: 'NOT_FOUND' }, 404);
       // deno-lint-ignore no-explicit-any
       const c = cert as any;
+      if (!c.person.email) return json({ error: 'NO_EMAIL' }, 400);
+      const label = body.detail ? 'Constancia de participación' : 'Constancia de asistencia';
       const first = String(c.person.full_name).split(' ')[0];
       const detail = body.detail ? esc(body.detail) : c.activity
         ? `${esc(c.activity.type)} ${esc(c.activity.name)} · ${esc(body.duration ?? '')} · ${fmtDate(c.activity.day)}`
@@ -36,9 +38,9 @@ Deno.serve(async (req) => {
           color: c.event.color_primary,
           eventName: c.event.name,
           title: `Tu constancia: ${c.activity?.name ?? 'participación'}`,
-          body: `<p>Hola ${esc(first)}, gracias por asistir a ${esc(c.event.name)}. Adjuntamos tu constancia de asistencia.</p>
+          body: `<p>Hola ${esc(first)}, gracias por ${body.detail ? 'participar en' : 'asistir a'} ${esc(c.event.name)}. Adjuntamos tu ${label.toLowerCase()}.</p>
             <div style="border-left:6px solid ${esc(c.event.color_primary)};border-radius:12px;background:#f7f8fb;padding:14px 16px;margin:16px 0">
-              <div style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:${esc(c.event.color_primary)}">Constancia de asistencia</div>
+              <div style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:${esc(c.event.color_primary)}">${label}</div>
               <div style="font-size:20px;font-weight:700">${esc(c.person.full_name)}</div>
               <div style="font-size:12px;color:#5a6070">${detail}</div>
             </div>
@@ -59,6 +61,7 @@ Deno.serve(async (req) => {
       if (error || !p) return json({ error: 'NOT_FOUND' }, 404);
       // deno-lint-ignore no-explicit-any
       const r = p as any;
+      if (!r.email) return json({ error: 'NO_EMAIL' }, 400);
       const pays = [...r.payments].sort((a, b) => a.paid_on.localeCompare(b.paid_on));
       const paid = pays.reduce((s, x) => s + Number(x.amount), 0);
       const due = Number(r.amount_due);

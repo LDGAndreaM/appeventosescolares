@@ -11,6 +11,7 @@ const MESSAGES: Record<string, string> = {
   NOT_REGISTERED: 'No encontramos ese correo entre las personas registradas al evento.',
   NOT_ENROLLED: 'Esta actividad solo acepta asistencia de personas inscritas.',
   EMAIL_NOT_CONFIGURED: 'El envío de correos no está configurado (falta RESEND_API_KEY en Supabase).',
+  NO_EMAIL: 'Esta persona no tiene correo registrado.',
   FORBIDDEN: 'No tienes permiso para hacer esto.',
   UNAUTHORIZED: 'Tu sesión expiró. Vuelve a entrar.',
   INVALID_EMAIL: 'Escribe un correo válido.',
@@ -20,7 +21,7 @@ const MESSAGES: Record<string, string> = {
 
 export function friendlyError(e: unknown): string {
   const raw = (e as { message?: string })?.message ?? String(e);
-  if (/people_event_email_uq/.test(raw)) return 'Ya hay una persona con ese correo en el evento.';
+  if (/people_event_email_uq/.test(raw)) return 'Ya hay una persona con ese correo en el evento. Corre la migración «correo_opcional» en Supabase para permitir correos repetidos.';
   if (/events_slug_key/.test(raw)) return 'Ese enlace ya está en uso; cambia el nombre corto.';
   if (/row-level security/.test(raw)) return MESSAGES.FORBIDDEN;
   if (/Invalid login credentials/i.test(raw)) return 'Correo o contraseña incorrectos.';

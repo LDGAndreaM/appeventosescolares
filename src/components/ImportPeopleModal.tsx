@@ -41,7 +41,7 @@ interface Row {
 
 interface Parsed {
   line: number;
-  person: { full_name: string; email: string; role: Role; profile: PersonProfile | null; career: string | null; semester: number | null; package: Package | null };
+  person: { full_name: string; email: string | null; role: Role; profile: PersonProfile | null; career: string | null; semester: number | null; package: Package | null };
   payment: { amount: number; paid_on: string; method: Method } | null;
   errors: string[];
   warnings: string[];
@@ -73,6 +73,16 @@ export function parseCSV(text: string): string[][] {
   return rows.filter((r) => r.some((x) => x.trim()));
 }
 
+/** Lee el archivo como UTF-8 y, si no lo es (CSV guardado por Excel en Windows), como Windows-1252. */
+async function readText(f: File): Promise<string> {
+  const buf = await f.arrayBuffer();
+  try {
+    return new TextDecoder('utf-8', { fatal: true }).decode(buf);
+  } catch {
+    return new TextDecoder('windows-1252').decode(buf);
+  }
+}
+
 function parseDate(s: string): string | null {
   const v = s.trim();
   if (!v) return null;
@@ -96,20 +106,26 @@ function interpret(rows: string[][], packages: Package[], existing: Person[]): {
   const [head, ...body] = rows;
   const cols = head.map((h) => COLUMN[norm(h)]);
   const unknownCols = head.filter((_, i) => !cols[i] && head[i].trim());
-  const missing = (['full_name', 'email'] as const).filter((k) => !cols.includes(k)).map((k) => (k === 'full_name' ? 'Nombre' : 'Correo'));
-  const taken = new Set(existing.map((p) => p.email.toLowerCase()));
+  const missing = cols.includes('full_name') ? [] : ['Nombre'];
+  // solo se omite a quien ya está con el mismo nombre y correo (p. ej. al subir el mismo archivo dos veces)
+  const key = (name: string, email: string | null) => `${norm(name)}|${email ?? ''}`;
+  const taken = new Set(existing.map((p) => key(p.full_name, p.email)));
   const seen = new Set<string>();
   const parsed = body.map((cells, i): Parsed => {
     const r: Row = { full_name: '', email: '', role: '', profile: '', career: '', semester: '', package: '', amount: '', paid_on: '', method: '' };
     cols.forEach((k, j) => { if (k) r[k] = (cells[j] ?? '').trim(); });
     const errors: string[] = [];
     const warnings: string[] = [];
-    const email = r.email.toLowerCase();
+    let email: string | null = r.email.toLowerCase() || null;
+    if (email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+      warnings.push(`Correo «${r.email}» no válido: se importa sin correo`);
+      email = null;
+    }
+    const k = key(r.full_name, email);
     if (!r.full_name) errors.push('Falta el nombre');
-    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) errors.push('Correo inválido');
-    else if (taken.has(email)) errors.push('Ya está registrado en el evento');
-    else if (seen.has(email)) errors.push('Correo repetido en el archivo');
-    seen.add(email);
+    else if (taken.has(k)) errors.push('Ya está registrada en el evento');
+    else if (seen.has(k)) errors.push('Fila repetida en el archivo');
+    seen.add(k);
 
     let role = ROLES.find((x) => norm(x) === norm(r.role)) as Role | undefined;
     if (!role) {
@@ -171,7 +187,7 @@ export default function ImportPeopleModal(props: {
     if (!f) return;
     if (/\.xlsx?$/i.test(f.name)) return setError('Ese es un archivo de Excel. En Excel elige «Guardar como → CSV UTF-8» y sube ese archivo.');
     setFileName(f.name);
-    const text = await f.text();
+    const text = await readText(f);
     const r = parseCSV(text);
     if (r.length < 2) return setError('El archivo no tiene filas de datos.');
     setRows(r);
@@ -241,8 +257,9 @@ export default function ImportPeopleModal(props: {
         <button type="button" className="link" onClick={template}>Descargar plantilla</button>
       </div>
       <p className="muted" style={{ fontSize: 13, margin: 0 }}>
-        Columnas: <b>Nombre</b> y <b>Correo</b> (obligatorias), Rol, Perfil, Carrera, Semestre, Paquete, Abono, Fecha abono, Método.
-        Los nombres de paquete deben coincidir con los de <i>Paquetes</i>. Las personas que ya están registradas se omiten.
+        Columnas: <b>Nombre</b> (obligatoria), Correo, Rol, Perfil, Carrera, Semestre, Paquete, Abono, Fecha abono, Método.
+        El correo es opcional y puede repetirse. Los nombres de paquete deben coincidir con los de <i>Paquetes</i>.
+        Solo se omite a quien ya esté registrado con el mismo nombre y correo.
       </p>
       {!result && (
         <label className="btn btn-secondary" style={{ alignSelf: 'flex-start' }}>
@@ -268,7 +285,7 @@ export default function ImportPeopleModal(props: {
                   <tr key={p.line} style={p.errors.length ? { opacity: 0.55 } : undefined}>
                     <td>{p.line}</td>
                     <td>{p.person.full_name}</td>
-                    <td>{p.person.email}</td>
+                    <td>{p.person.email ?? <span className="muted">Sin correo</span>}</td>
                     <td>{p.person.role}</td>
                     <td>{p.person.profile ?? '—'}{p.person.semester ? ` · ${p.person.semester}º` : ''}</td>
                     <td>{p.person.package?.name ?? '—'}</td>

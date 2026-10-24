@@ -25,7 +25,7 @@ export function participantsDataset(s: Pick<ExportSource, 'people' | 'packages' 
       const paid = s.balances.get(p.id)?.paid ?? 0;
       const has = !!p.package_id;
       return [
-        p.full_name, p.email, p.role, p.profile ?? '', p.career ?? '', p.semester ?? '', pkgName(s.packages, p.package_id),
+        p.full_name, p.email ?? '', p.role, p.profile ?? '', p.career ?? '', p.semester ?? '', pkgName(s.packages, p.package_id),
         has ? p.amount_due : '', has ? paid : '', has ? Math.max(p.amount_due - paid, 0) : '', p.settled_on ? dmy(p.settled_on) : '',
         p.source === 'public' ? 'Formulario público' : 'Administración',
       ];
@@ -42,7 +42,7 @@ export function paymentsDataset(s: Pick<ExportSource, 'people' | 'packages' | 'b
       const b = s.balances.get(p.id);
       const mine = s.payments.filter((x) => x.person_id === p.id);
       return [
-        p.full_name, p.email, profileLabel(p), pkgName(s.packages, p.package_id), p.amount_due, b?.paid ?? 0,
+        p.full_name, p.email ?? '', profileLabel(p), pkgName(s.packages, p.package_id), p.amount_due, b?.paid ?? 0,
         Math.max(p.amount_due - (b?.paid ?? 0), 0), mine.length,
         mine.map((x) => `${dmy(x.paid_on)} ${x.method} $${x.amount}${x.received_by_name ? ` (${x.received_by_name})` : ''}`).join('; '),
         b?.last_paid_on ? dmy(b.last_paid_on) : '', p.settled_on ? dmy(p.settled_on) : '', payStatus(p, b),
@@ -79,7 +79,7 @@ export function attendanceDataset(s: Pick<ExportSource, 'people' | 'activities' 
   const people = new Map(s.people.map((p) => [p.id, p]));
   const rows = (only ? [only] : s.activities).flatMap((a) =>
     attendanceRows(a, people, s.enrollments, s.attendance).map((r) => [
-      r.person.full_name, r.person.email, profileLabel(r.person), a.name, a.type, dmy(a.day), timeRange(a.starts_at, a.ends_at),
+      r.person.full_name, r.person.email ?? '', profileLabel(r.person), a.name, a.type, dmy(a.day), timeRange(a.starts_at, a.ends_at),
       r.enrollment ? (r.enrollment.status === 'waitlist' ? 'Lista de espera' : 'Sí') : 'No', r.status, r.via,
     ]),
   );

@@ -102,7 +102,7 @@ export interface Person {
   id: string;
   event_id: string;
   full_name: string;
-  email: string;
+  email: string | null;
   role: Role;
   profile: PersonProfile | null;
   career: string | null;

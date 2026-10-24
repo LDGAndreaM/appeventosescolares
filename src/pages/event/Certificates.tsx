@@ -1,13 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useEventCtx } from '../../layout/EventLayout';
 import {
-  uploadEventAsset, useActivities, useAttendance, useCertSettings, useCertificates, useEnrollments, useInvalidateEvent,
+  callFunction, uploadEventAsset, useActivities, useAttendance, useCertSettings, useCertificates, useEnrollments, useInvalidateEvent,
   usePeople,
 } from '../../lib/api';
 import { supabase } from '../../lib/supabase';
 import { friendlyError } from '../../lib/messages';
 import { dayShort, durationLabel, longDate, shortDate, todayISO } from '../../lib/format';
 import { activitiesGivenBy, activityLine, certificatesPdf, downloadBlob, drawCertificate, renderTemplate, type CertificateData } from '../../lib/certificate';
+import { certificateUrl } from '../../lib/qr';
 import { attendanceRows } from '../../lib/datasets';
 import { ROLES, type Activity, type Certificate, type CertificateSettings, type Person, type Signer } from '../../lib/types';
 import { Field, Loading, SettingRow, Toggle, useToast } from '../../components/ui';
@@ -169,6 +170,55 @@ export default function Certificates() {
     }
   };
 
+  /** Envía a cada persona seleccionada su constancia en PDF; se salta a quien no tiene correo. */
+  const sendAll = async () => {
+    const withEmail = selected.filter((r) => r.person.email);
+    if (!withEmail.length) return toast('Ninguna de las personas seleccionadas tiene correo.', true);
+    setBusy('Preparando…');
+    let sent = 0;
+    const failed: string[] = [];
+    try {
+      const issued = await issue();
+      for (const r of withEmail) {
+        const cert = issued.find((c) => c.person_id === r.person.id);
+        const d = cert && dataFor(r.person, cert.folio);
+        if (!cert || !d) continue;
+        setBusy(`Enviando ${sent + failed.length + 1} de ${withEmail.length}…`);
+        try {
+          const pdf = await certificatesPdf([d]);
+          const others = certs.data!
+            .filter((c) => c.person_id === r.person.id && c.id !== cert.id && c.activity_id && c.kind === 'attendance')
+            .map((c) => ({ name: acts.find((a) => a.id === c.activity_id)?.name ?? '', url: certificateUrl(c.folio) }));
+          await callFunction('send-mail', {
+            kind: 'certificate', certificate_id: cert.id, pdf_base64: pdf.output('datauristring').split(',')[1],
+            duration: act && kind === 'activity' ? durationLabel(act.starts_at, act.ends_at) : '', verify_url: certificateUrl(cert.folio), others,
+            detail: kind === 'role' ? `Constancia de participación como ${r.person.role.toLowerCase()}` : undefined,
+          });
+          sent++;
+        } catch (e) {
+          const msg = friendlyError(e);
+          // sin configuración de correo no tiene caso seguir intentando
+          if (/configurad|activada/.test(msg)) throw e;
+          failed.push(`${r.person.full_name}: ${msg}`);
+        }
+        // Resend acepta pocas solicitudes por segundo
+        await new Promise((ok) => setTimeout(ok, 600));
+      }
+      const skipped = selected.length - withEmail.length;
+      toast(
+        `${sent} ${sent === 1 ? 'constancia enviada' : 'constancias enviadas'}` +
+          (skipped ? ` · ${skipped} sin correo` : '') +
+          (failed.length ? ` · ${failed.length} no se pudieron enviar (${failed.slice(0, 2).join('; ')})` : ''),
+        failed.length > 0,
+      );
+    } catch (e) {
+      toast(`${sent ? `Se enviaron ${sent}. ` : ''}${friendlyError(e)}`, true);
+    } finally {
+      setBusy(null);
+      await invalidate('certificates');
+    }
+  };
+
   const uploadDesign = async (picked: File | undefined, apply: (url: string) => void, opts: CropOptions) => {
     if (!picked) return;
     const file = await cropper.crop(picked, opts);
@@ -194,6 +244,8 @@ export default function Certificates() {
 
   const finished = event.status === 'finished' || todayISO() > event.end_date;
   const notAttended = recipients.filter((r) => !r.attended).length;
+  const withEmail = selected.filter((r) => r.person.email).length;
+  const noEmail = recipients.filter((r) => r.attended && !r.person.email).length;
 
   return (
     <>
@@ -203,8 +255,9 @@ export default function Certificates() {
           <h2>Constancias</h2>
         </div>
         <div className="page-actions">
-          <button className="btn btn-primary" disabled={!!busy || !selected.length} onClick={downloadAll}>
-            {busy ?? `Descargar ${selected.length} ${selected.length === 1 ? 'constancia' : 'constancias'} (PDF)`}
+          <button className="btn btn-secondary" disabled={!!busy || !selected.length} onClick={downloadAll}>Descargar todas (PDF)</button>
+          <button className="btn btn-primary" disabled={!!busy || !withEmail} onClick={sendAll}>
+            {busy ?? `Enviar ${withEmail} ${withEmail === 1 ? 'constancia' : 'constancias'} por correo`}
           </button>
         </div>
       </div>
@@ -337,6 +390,7 @@ export default function Certificates() {
                 ? <span className="tag tag-ev" style={{ padding: '4px 9px' }}>{roleFilter === TEAM ? 'Equipo' : roleFilter} {recipients.length}</span>
                 : <span className="tag tag-ok" style={{ padding: '4px 9px' }}>Asistieron {recipients.filter((r) => r.attended).length}</span>}
               {kind === 'activity' && <span className="tag tag-muted" style={{ padding: '4px 9px' }}>Sin asistencia {notAttended}</span>}
+              {noEmail > 0 && <span className="tag tag-warn" style={{ padding: '4px 9px' }} title="Se incluyen al descargar el PDF, pero no se les puede enviar por correo">Sin correo {noEmail}</span>}
             </div>
           </div>
           {!recipients.length && <div className="empty">Sin destinatarios.</div>}
@@ -358,7 +412,7 @@ export default function Certificates() {
                 <span className={'check' + (on ? ' on' : '')}>{on ? '✓' : ''}</span>
                 <div style={{ minWidth: 0 }}>
                   <div style={{ fontSize: 13, fontWeight: 700 }}>{r.person.full_name}</div>
-                  <div className="ellipsis" style={{ fontSize: 11 }}><span className="muted">{kind === 'role' ? `${r.person.role} · ` : ''}{r.person.email}</span></div>
+                  <div className="ellipsis" style={{ fontSize: 11 }}><span className="muted">{kind === 'role' ? `${r.person.role} · ` : ''}{r.person.email ?? 'Sin correo'}</span></div>
                 </div>
                 <span className={'tag ' + (st === 'Enviada' ? 'tag-ok' : st === 'Lista' ? 'tag-ev' : 'tag-muted')}>{st}</span>
               </button>
