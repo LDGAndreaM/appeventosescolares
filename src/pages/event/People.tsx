@@ -18,6 +18,7 @@ export default function People() {
   const balances = useBalances(event.id);
   const [role, setRole] = useState('Todos');
   const [q, setQ] = useState('');
+  const [semester, setSemester] = useState('');
   const [importing, setImporting] = useState(false);
   const activities = useActivities(event.id);
   const invalidate = useInvalidateEvent(event.id);
@@ -27,8 +28,14 @@ export default function People() {
   const norm = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
   const term = norm(q.trim());
   const list = people.data.filter(
-    (p) => (role === 'Todos' || p.role === role) && (!term || norm(p.full_name).includes(term) || (p.email ?? '').includes(term)),
+    (p) =>
+      (role === 'Todos' || p.role === role) &&
+      (!semester || String(p.semester) === semester) &&
+      (!term || norm(p.full_name).includes(term) || (p.email ?? '').includes(term)),
   );
+  // semestres de los estudiantes registrados, con cuántos hay en cada uno (respetando el rol elegido)
+  const semesters = [...new Set(people.data.filter((p) => p.semester).map((p) => p.semester!))].sort((a, b) => a - b)
+    .map((s) => [s, people.data!.filter((p) => p.semester === s && (role === 'Todos' || p.role === role)).length] as const);
   const chips = [['Todos', people.data.length] as const, ...ROLES.map((r) => [r, people.data!.filter((p) => p.role === r).length] as const)];
 
   return (
@@ -39,7 +46,7 @@ export default function People() {
           <h2>Participantes</h2>
         </div>
         <div className="page-actions">
-          <button className="btn btn-secondary" onClick={() => downloadDataset(participantsDataset({ people: people.data!, packages: packages.data!, balances: balances.data! }, role), 'csv', `${event.code_prefix}-participantes`)}>
+          <button className="btn btn-secondary" onClick={() => downloadDataset(participantsDataset({ people: list, packages: packages.data!, balances: balances.data! }), 'csv', `${event.code_prefix}-participantes`)}>
             Exportar CSV
           </button>
           <button className="btn btn-secondary" onClick={() => setImporting(true)}>Importar CSV</button>
@@ -55,12 +62,20 @@ export default function People() {
             </button>
           ))}
         </div>
+        <div className="row" style={{ gap: 8 }}>
+        {semesters.length > 0 && (
+          <select className="input search" style={{ width: 'auto' }} value={semester} onChange={(e) => setSemester(e.target.value)} aria-label="Semestre">
+            <option value="">Todos los semestres</option>
+            {semesters.map(([s, n]) => <option key={s} value={s}>{s}º semestre ({n})</option>)}
+          </select>
+        )}
         <input className="input search" placeholder="Buscar nombre o correo" value={q} onChange={(e) => setQ(e.target.value)} aria-label="Buscar" />
+        </div>
       </div>
       <div className="thead people-grid">
         <span>Nombre y correo</span><span>Rol</span><span>Perfil</span><span>Paquete</span><span>Total</span><span>Saldo</span><span>Estado</span>
       </div>
-      {!list.length && <div className="empty">{people.data.length ? 'Nadie coincide con la búsqueda.' : 'Aún no hay personas registradas.'}</div>}
+      {!list.length && <div className="empty">{people.data.length ? 'Nadie coincide con los filtros.' : 'Aún no hay personas registradas.'}</div>}
       {list.map((p) => {
         const b = balances.data!.get(p.id);
         const st = payStatus(p, b);
