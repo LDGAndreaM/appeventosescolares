@@ -20,13 +20,14 @@ export function participantsDataset(s: Pick<ExportSource, 'people' | 'packages' 
   const list = role === 'Todos' ? s.people : s.people.filter((p) => p.role === role);
   return {
     title: 'Participantes',
-    head: ['Nombre', 'Correo', 'Rol', 'Perfil', 'Carrera', 'Semestre', 'Paquete', 'Total', 'Pagado', 'Saldo', 'Liquidó', 'Origen'],
+    head: ['Nombre', 'Correo', 'Rol', 'Perfil', 'Carrera', 'Semestre', 'Paquete', 'Total', 'Pagado', 'Saldo', 'Liquidó', 'Kit de bienvenida', 'Origen'],
     rows: list.map((p) => {
       const paid = s.balances.get(p.id)?.paid ?? 0;
       const has = !!p.package_id;
       return [
         p.full_name, p.email ?? '', p.role, p.profile ?? '', p.career ?? '', p.semester ?? '', pkgName(s.packages, p.package_id),
         has ? p.amount_due : '', has ? paid : '', has ? Math.max(p.amount_due - paid, 0) : '', p.settled_on ? dmy(p.settled_on) : '',
+        p.kit_delivered_on ? `Entregado ${dmy(p.kit_delivered_on)}` : 'Pendiente',
         p.source === 'public' ? 'Formulario público' : 'Administración',
       ];
     }),

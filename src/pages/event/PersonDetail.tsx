@@ -22,6 +22,7 @@ interface Draft {
   career: string;
   semester: number | null;
   package_id: string | null;
+  kit_delivered_on: string | null;
 }
 
 const fromPerson = (p?: Person): Draft => ({
@@ -32,6 +33,7 @@ const fromPerson = (p?: Person): Draft => ({
   career: p?.career ?? '',
   semester: p?.semester ?? null,
   package_id: p?.package_id ?? null,
+  kit_delivered_on: p?.kit_delivered_on ?? null,
 });
 
 type Choice = { id: string; status: 'enrolled' | 'waitlist' };
@@ -139,7 +141,7 @@ function PersonDetail() {
         event_id: event.id, full_name: d.full_name.trim(), email: d.email.trim() || null, role: d.role, profile: d.profile,
         career: d.profile === 'Estudiante' ? d.career.trim() || null : null,
         semester: d.profile === 'Estudiante' ? d.semester : null,
-        package_id: isParticipant ? d.package_id : null, amount_due: due,
+        package_id: isParticipant ? d.package_id : null, amount_due: due, kit_delivered_on: d.kit_delivered_on,
       };
       let id = personId;
       if (id) {
@@ -223,6 +225,16 @@ function PersonDetail() {
     const { error } = await supabase.from('payments').delete().eq('id', id);
     if (error) return toast(friendlyError(error), true);
     await invalidate(`payments-${personId}`, 'payments', 'balances', 'people', `person-${personId}`);
+  };
+
+  /** Kit de bienvenida: en una persona ya guardada se registra al momento; en una nueva, al guardar. */
+  const setKit = async (kit_delivered_on: string | null) => {
+    set({ kit_delivered_on });
+    if (!personId) return;
+    const { error } = await supabase.from('people').update({ kit_delivered_on }).eq('id', personId);
+    if (error) return toast(friendlyError(error), true);
+    await invalidate('people', `person-${personId}`);
+    toast(kit_delivered_on ? 'Kit marcado como entregado' : 'Kit marcado como pendiente');
   };
 
   const removePerson = async () => {
@@ -358,6 +370,22 @@ function PersonDetail() {
               </div>
             </>
           )}
+          <div className="stack" style={{ gap: 8, paddingTop: 12, borderTop: '1px solid var(--color-divider)' }}>
+            <span style={{ fontSize: 13, fontWeight: 700 }}>Kit de bienvenida</span>
+            <div className="seg seg-ev" role="group" aria-label="Kit de bienvenida">
+              <button type="button" style={{ flex: 1 }} aria-pressed={!d.kit_delivered_on} onClick={() => d.kit_delivered_on && setKit(null)}>Pendiente</button>
+              <button type="button" style={{ flex: 1 }} aria-pressed={!!d.kit_delivered_on} onClick={() => !d.kit_delivered_on && setKit(todayISO())}>Entregado</button>
+            </div>
+            {d.kit_delivered_on ? (
+              <div className="row" style={{ justifyContent: 'space-between', fontSize: 13, gap: 8 }}>
+                <span>Fecha de entrega</span>
+                <input className="input input-xs" type="date" style={{ width: 'auto' }} value={d.kit_delivered_on} aria-label="Fecha de entrega del kit"
+                  onChange={(e) => e.target.value && setKit(e.target.value)} />
+              </div>
+            ) : (
+              <span className="field-hint">Al marcarlo como entregado se guarda la fecha de hoy (puedes cambiarla).</span>
+            )}
+          </div>
         </section>
 
         <section>

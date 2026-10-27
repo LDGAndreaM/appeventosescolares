@@ -110,6 +110,8 @@ export interface Person {
   package_id: string | null;
   amount_due: number;
   settled_on: string | null;
+  /** Fecha de entrega del kit de bienvenida; null = pendiente. */
+  kit_delivered_on: string | null;
   source: 'admin' | 'public';
   created_at: string;
 }
