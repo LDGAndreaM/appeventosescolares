@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useEventCtx } from '../../layout/EventLayout';
 import { useActivities, useBalances, useInvalidateEvent, usePackages, usePeople } from '../../lib/api';
-import { money, profileLabel } from '../../lib/format';
+import { money, profileLabel, shortDate } from '../../lib/format';
 import { PAY_STYLE, payStatus, type PayStatus } from '../../lib/people';
 import { participantsDataset } from '../../lib/datasets';
 import { downloadDataset } from '../../lib/export';
@@ -11,9 +11,9 @@ import { Loading, useToast } from '../../components/ui';
 import ImportPeopleModal from '../../components/ImportPeopleModal';
 import './event.css';
 
-type SortKey = 'name' | 'role' | 'profile' | 'package' | 'total' | 'saldo' | 'status';
+type SortKey = 'name' | 'role' | 'profile' | 'package' | 'total' | 'saldo' | 'kit' | 'status';
 const COLUMNS: [SortKey, string][] = [
-  ['name', 'Nombre y correo'], ['role', 'Rol'], ['profile', 'Perfil'], ['package', 'Paquete'], ['total', 'Total'], ['saldo', 'Saldo'], ['status', 'Estado'],
+  ['name', 'Nombre y correo'], ['role', 'Rol'], ['profile', 'Perfil'], ['package', 'Paquete'], ['total', 'Total'], ['saldo', 'Saldo'], ['kit', 'Kit'], ['status', 'Estado'],
 ];
 /** Orden de los estados de pago al ordenar por «Estado» (ascendente). */
 const STATUS_ORDER: Record<Exclude<PayStatus, '—'>, number> = { Pendiente: 0, Abonado: 1, Liquidado: 2 };
@@ -33,6 +33,12 @@ export default function People() {
   const [q, setQ] = useState('');
   const [semester, setSemester] = useState('');
   const [status, setStatus] = useState('');
+  const [search] = useSearchParams();
+  // «Ver pendientes / entregados» desde Resumen llega con ?kit=
+  const [kit, setKit] = useState<'' | 'entregado' | 'pendiente'>(() => {
+    const k = search.get('kit');
+    return k === 'entregado' || k === 'pendiente' ? k : '';
+  });
   const [sort, setSort] = useState<{ key: SortKey; dir: 1 | -1 }>({ key: 'name', dir: 1 });
   const [importing, setImporting] = useState(false);
   const activities = useActivities(event.id);
@@ -56,6 +62,8 @@ export default function People() {
       case 'package': return pkgOf(p) || null;
       case 'total': return p.package_id ? p.amount_due : null;
       case 'saldo': return p.package_id ? saldoOf(p) : null;
+      // pendientes primero; los entregados, del más antiguo al más reciente
+      case 'kit': return p.kit_delivered_on ?? '';
       case 'status': {
         const st = statusOf(p);
         return st === '—' ? null : STATUS_ORDER[st];
@@ -74,6 +82,7 @@ export default function People() {
       (p) =>
         (!semester || String(p.semester) === semester) &&
         (!statusWanted || statusOf(p) === statusWanted) &&
+        (!kit || (kit === 'entregado') === !!p.kit_delivered_on) &&
         (!term || norm(p.full_name).includes(term) || (p.email ?? '').includes(term)),
     )
     .sort(compare);
@@ -118,6 +127,11 @@ export default function People() {
           <option value="">Todos los estados</option>
           {STATUS_FILTERS.map((x) => <option key={x.value} value={x.value}>{x.label} ({byRole.filter((p) => statusOf(p) === x.status).length})</option>)}
         </select>
+        <select className="input search" style={{ width: 'auto' }} value={kit} onChange={(e) => setKit(e.target.value as typeof kit)} aria-label="Kit de bienvenida">
+          <option value="">Kit: todos</option>
+          <option value="entregado">Kit entregado ({byRole.filter((p) => p.kit_delivered_on).length})</option>
+          <option value="pendiente">Kit pendiente ({byRole.filter((p) => !p.kit_delivered_on).length})</option>
+        </select>
         <input className="input search" placeholder="Buscar nombre o correo" value={q} onChange={(e) => setQ(e.target.value)} aria-label="Buscar" />
         </div>
       </div>
@@ -145,6 +159,9 @@ export default function People() {
             <span style={{ fontSize: 13, fontWeight: 600 }}>{pkgOf(p) || '—'}</span>
             <span style={{ fontSize: 13 }}>{has ? money(p.amount_due) : '—'}</span>
             <span style={{ fontSize: 13, fontWeight: 600 }}>{has ? money(saldoOf(p)) : '—'}</span>
+            <span style={{ fontSize: 13 }} className={p.kit_delivered_on ? undefined : 'muted'}>
+              {p.kit_delivered_on ? <><span style={{ color: 'var(--ev)', fontWeight: 700 }}>✓</span> {shortDate(p.kit_delivered_on).replace(/ \d{4}$/, '')}</> : 'Pendiente'}
+            </span>
             <span className="tag" style={PAY_STYLE[st]}>{st}</span>
           </Link>
         );

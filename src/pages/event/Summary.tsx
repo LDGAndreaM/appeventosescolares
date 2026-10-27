@@ -37,6 +37,9 @@ export default function Summary() {
   const occ = workshops.reduce((s, a) => s + Math.min(stats.data.get(a.id)?.enrolled ?? 0, a.capacity ?? 0), 0);
   const fullCount = workshops.filter((a) => (stats.data.get(a.id)?.enrolled ?? 0) >= (a.capacity ?? Infinity)).length;
   const pct = (a: number, b: number) => (b ? Math.round((a / b) * 100) : 0);
+  const kitsGiven = people.data.filter((p) => p.kit_delivered_on);
+  const kitDays = [...new Set(kitsGiven.map((p) => p.kit_delivered_on!))].sort()
+    .map((d) => [d, kitsGiven.filter((p) => p.kit_delivered_on === d).length] as const);
 
   const cards = [
     { k: 'Personas registradas', v: people.data.length.toLocaleString('es-MX'), sub: `${participants.length} participantes · ${people.data.length - participants.length} equipo`, pct: people.data.length ? 100 : 0 },
@@ -116,6 +119,24 @@ export default function Summary() {
                 </div>
               );
             })}
+          </div>
+          <div>
+            <div className="row" style={{ justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 12 }}>
+              <h5>Kits de bienvenida</h5>
+              <span style={{ fontSize: 13, fontWeight: 700 }}>{kitsGiven.length} de {people.data.length} entregados</span>
+            </div>
+            <Progress lg pct={pct(kitsGiven.length, people.data.length)} />
+            <div className="stack" style={{ gap: 6, marginTop: 12 }}>
+              {kitDays.map(([d, n]) => (
+                <div key={d} className="row" style={{ justifyContent: 'space-between', fontSize: 13 }}>
+                  <span>{dayLong(d)}</span><b>{n}</b>
+                </div>
+              ))}
+            </div>
+            <div className="row" style={{ gap: 16, marginTop: 12, fontSize: 13 }}>
+              <Link to="../participantes?kit=pendiente" className="link">Ver pendientes ({people.data.length - kitsGiven.length}) →</Link>
+              {kitsGiven.length > 0 && <Link to="../participantes?kit=entregado" className="link">Ver entregados →</Link>}
+            </div>
           </div>
           <div>
             <h5 style={{ marginBottom: 12 }}>Perfil de participantes</h5>

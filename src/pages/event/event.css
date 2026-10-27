@@ -15,7 +15,7 @@
 .th-sort .arrow { font-size: 9px; color: var(--color-neutral-500); }
 .th-sort:hover .arrow, .th-sort.on .arrow { color: var(--ev); }
 .th-sort:focus-visible { outline: 2px solid var(--ev); outline-offset: 2px; border-radius: 4px; }
-.people-grid { grid-template-columns: minmax(0, 1.6fr) 120px minmax(0, 1.2fr) 96px 90px 90px 104px; }
+.people-grid { grid-template-columns: minmax(0, 1.6fr) 120px minmax(0, 1.2fr) 96px 84px 84px 92px 104px; }
 /* Pagos (1m) */
 .pay-grid { grid-template-columns: minmax(0, 1.4fr) 90px minmax(0, 1.3fr) 110px 120px 104px; gap: 14px; }
 /* Administradores (1e) */
