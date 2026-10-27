@@ -132,3 +132,7 @@
   .cupo-row { grid-template-columns: 1fr 90px 44px; }
   .itin-cols { grid-template-columns: 1fr !important; padding: 16px !important; }
 }
+
+.icon-btn { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; flex: none; border: 0; border-radius: 10px; background: transparent; color: var(--color-neutral-500); cursor: pointer; }
+.icon-btn.danger:hover { color: var(--danger); background: var(--color-neutral-100); }
+.icon-btn:focus-visible { outline: 2px solid var(--ev); outline-offset: 2px; }

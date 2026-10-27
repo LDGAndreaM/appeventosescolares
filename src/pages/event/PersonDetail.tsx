@@ -250,7 +250,19 @@ function PersonDetail() {
       <div className="page-head">
         <div>
           <div className="kicker"><Link to="../participantes" style={{ color: 'inherit', textDecoration: 'none' }}>Participantes</Link> / {personId ? 'ficha' : 'nueva persona'}</div>
-          <h2>{d.full_name || 'Nueva persona'}</h2>
+          <div className="row" style={{ gap: 10 }}>
+            <h2>{d.full_name || 'Nueva persona'}</h2>
+            {personId && (
+              <button type="button" className="icon-btn danger" onClick={removePerson} aria-label="Eliminar persona" title="Eliminar persona">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M3 6h18" />
+                  <path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2" />
+                  <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                  <path d="M10 11v6M14 11v6" />
+                </svg>
+              </button>
+            )}
+          </div>
         </div>
         <div className="page-actions">
           {personId ? (
@@ -296,7 +308,6 @@ function PersonDetail() {
               </Field>
             </>
           )}
-          {personId && <button type="button" className="link danger" style={{ alignSelf: 'flex-start', marginTop: 'auto' }} onClick={removePerson}>Eliminar persona</button>}
         </section>
 
         <section>
