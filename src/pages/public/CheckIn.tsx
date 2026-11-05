@@ -16,6 +16,7 @@ interface CheckinActivity {
   day: string;
   starts_at: string;
   ends_at: string;
+  requires_registration?: boolean;
   event_name: string;
   acronym: string;
   color_primary: string;
@@ -24,15 +25,19 @@ interface CheckinActivity {
 }
 
 const EMAIL_KEY = 'aforo-checkin-email';
-const readEmail = () => {
+const NAME_KEY = 'aforo-checkin-name';
+const read = (key: string) => {
   try {
-    return localStorage.getItem(EMAIL_KEY) ?? '';
+    return localStorage.getItem(key) ?? '';
   } catch {
     return '';
   }
 };
 
-/** 2c · El asistente escanea el QR de la actividad y confirma con su correo. */
+/**
+ * 2c · El asistente escanea el QR de la actividad y confirma con su correo.
+ * En actividades sin registro previo también da su nombre y queda registrado al evento.
+ */
 export default function CheckIn() {
   const { code = '' } = useParams();
   const q = useQuery({
@@ -43,29 +48,32 @@ export default function CheckIn() {
       return data as CheckinActivity | null;
     },
   });
-  const [email, setEmail] = useState(readEmail);
+  const [email, setEmail] = useState(() => read(EMAIL_KEY));
+  const [name, setName] = useState(() => read(NAME_KEY));
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [ok, setOk] = useState<{ name: string; time: string; enrolled: boolean } | null>(null);
 
   if (q.isLoading) return <PublicShell><Loading /></PublicShell>;
   const a = q.data;
+  const open = a?.requires_registration === false;
   if (!a) return <PublicMessage title="Código no válido" text="Este QR no corresponde a ninguna actividad. Pide ayuda al staff." />;
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
     setBusy(true);
     setError(null);
-    const { data, error } = await supabase.rpc('checkin', { p_code: code, p_email: email.trim() });
+    const { data, error } = await supabase.rpc('checkin', { p_code: code, p_email: email.trim(), p_full_name: open ? name.trim() : null });
     setBusy(false);
     if (error) return setError(friendlyError(error));
     try {
       localStorage.setItem(EMAIL_KEY, email.trim());
+      if (open) localStorage.setItem(NAME_KEY, name.trim());
     } catch {
       /* almacenamiento no disponible */
     }
     const r = data as { full_name: string; local_time: string; enrolled: boolean };
-    setOk({ name: r.full_name, time: r.local_time, enrolled: r.enrolled });
+    setOk({ name: r.full_name, time: r.local_time, enrolled: r.enrolled || open });
   };
 
   return (
@@ -78,7 +86,14 @@ export default function CheckIn() {
       />
       <form className="stack" style={{ padding: '24px 20px', gap: 14, flex: 1 }} onSubmit={submit}>
         <h4>Registra tu asistencia</h4>
-        <p style={{ fontSize: 14 }} className="muted">Usa el correo con el que te inscribiste a {a.event_name}.</p>
+        <p style={{ fontSize: 14 }} className="muted">
+          {open ? `Escribe tu nombre completo y tu correo tal como quieres que aparezcan en tu constancia de ${a.event_name}.` : `Usa el correo con el que te inscribiste a ${a.event_name}.`}
+        </p>
+        {open && (
+          <Field label="Nombre completo">
+            <input className="input" autoComplete="name" required minLength={3} value={name} onChange={(e) => setName(e.target.value)} style={{ minHeight: 48, borderColor: 'var(--ev)' }} disabled={!!ok} />
+          </Field>
+        )}
         <Field label="Correo">
           <input className="input" type="email" inputMode="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} style={{ minHeight: 48, borderColor: 'var(--ev)' }} disabled={!!ok} />
         </Field>

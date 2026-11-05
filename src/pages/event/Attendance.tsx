@@ -55,7 +55,7 @@ export default function AttendancePage() {
 
   const s = stats.data.get(selected.id);
   const enrolled = s?.enrolled ?? 0;
-  const attendedEnrolled = rows.filter((r) => r.attendance && r.enrolled).length;
+  const attendedEnrolled = rows.filter((r) => r.status === 'Asistió').length;
   const walkIns = rows.filter((r) => r.status === 'Sin inscripción').length;
   const missing = rows.filter((r) => r.status === 'Falta').length;
   const counts: Record<Filter, number> = { Todos: rows.length, Asistieron: attendedEnrolled, Faltan: missing, 'Sin inscripción': walkIns };
@@ -112,6 +112,7 @@ export default function AttendancePage() {
             const walk = (st?.attended ?? 0) - att;
             const upcoming = a.day > today || (a.day === today && hm(a.starts_at) > new Date().toTimeString().slice(0, 5));
             const p = reg ? Math.round((att / reg) * 100) : 0;
+            const open = !a.requires_registration;
             return (
               <Link key={a.id} to={`../asistencia/${a.id}`} className={'att-act' + (a.id === selected.id ? ' sel' : '')}>
                 <div className="row" style={{ justifyContent: 'space-between', gap: 8 }}>
@@ -119,10 +120,14 @@ export default function AttendancePage() {
                   <span className="muted" style={{ fontSize: 12, flex: 'none' }}>{hm(a.starts_at)}</span>
                 </div>
                 <div className="row muted" style={{ justifyContent: 'space-between', fontSize: 12 }}>
-                  <span>{att} de {reg} asistieron{walk > 0 ? ` · +${walk} sin inscr.` : ''}</span>
-                  <span style={{ fontWeight: 700, color: 'var(--ev-700)' }}>{upcoming && !att ? 'Próxima' : `${p}%`}</span>
+                  <span>
+                    {open
+                      ? `${st?.attended ?? 0} ${(st?.attended ?? 0) === 1 ? 'asistió' : 'asistieron'} · sin registro previo`
+                      : `${att} de ${reg} asistieron${walk > 0 ? ` · +${walk} sin inscr.` : ''}`}
+                  </span>
+                  <span style={{ fontWeight: 700, color: 'var(--ev-700)' }}>{upcoming && !(st?.attended) ? 'Próxima' : open ? '' : `${p}%`}</span>
                 </div>
-                <Progress pct={p} />
+                {!open && <Progress pct={p} />}
               </Link>
             );
           })}
@@ -161,16 +166,26 @@ export default function AttendancePage() {
                 <Toggle label="QR activo" checked={selected.qr_enabled} disabled={!full} onChange={(v) => updateAct({ qr_enabled: v })} />
               </SettingRow>
             </div>
-            <SettingRow title="Solo inscritos" desc="Si está apagado, quien no esté inscrito queda como «sin inscripción»">
-              <Toggle label="Solo inscritos" checked={selected.only_registered} disabled={!full} onChange={(v) => updateAct({ only_registered: v })} />
+            <SettingRow
+              title="Requiere registro previo"
+              desc={selected.requires_registration
+                ? 'Solo pueden marcar asistencia las personas ya registradas en el evento'
+                : 'El QR pide nombre completo y correo; quien no esté registrado se agrega como participante'}
+            >
+              <Toggle label="Requiere registro previo" checked={selected.requires_registration} disabled={!full} onChange={(v) => updateAct({ requires_registration: v })} />
             </SettingRow>
+            {selected.requires_registration && (
+              <SettingRow title="Solo inscritos" desc="Si está apagado, quien no esté inscrito queda como «sin inscripción»">
+                <Toggle label="Solo inscritos" checked={selected.only_registered} disabled={!full} onChange={(v) => updateAct({ only_registered: v })} />
+              </SettingRow>
+            )}
           </div>
         </div>
 
         <div className="stack" style={{ gap: 16, minWidth: 0, gridArea: 'list' }}>
           <div className="stats-3">
             <div className="stat sm"><span className="k">Inscritos</span><span className="v">{enrolled}{selected.capacity && <small> / {selected.capacity} cupo</small>}</span></div>
-            <div className="stat sm"><span className="k">Asistieron</span><span className="v" style={{ color: 'var(--af-green)' }}>{attendedEnrolled}<small> · {pct}%</small></span></div>
+            <div className="stat sm"><span className="k">Asistieron</span><span className="v" style={{ color: 'var(--af-green)' }}>{attendedEnrolled}{enrolled > 0 && <small> · {pct}%</small>}</span></div>
             <div className="stat sm"><span className="k">Faltan</span><span className="v">{missing}</span></div>
           </div>
           <div className="card" style={{ overflow: 'hidden' }}>

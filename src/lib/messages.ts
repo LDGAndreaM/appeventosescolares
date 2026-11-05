@@ -9,6 +9,7 @@ const MESSAGES: Record<string, string> = {
   NOT_FOUND: 'No encontramos lo que buscas.',
   QR_INACTIVE: 'El registro de asistencia de esta actividad no está activo en este momento.',
   NOT_REGISTERED: 'No encontramos ese correo entre las personas registradas al evento.',
+  NAME_REQUIRED: 'Escribe tu nombre completo.',
   NOT_ENROLLED: 'Esta actividad solo acepta asistencia de personas inscritas.',
   EMAIL_NOT_CONFIGURED: 'El envío de correos no está configurado (falta RESEND_API_KEY en Supabase).',
   NO_EMAIL: 'Esta persona no tiene correo registrado.',

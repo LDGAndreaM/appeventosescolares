@@ -28,7 +28,7 @@ export function participantsDataset(s: Pick<ExportSource, 'people' | 'packages' 
         p.full_name, p.email ?? '', p.role, p.profile ?? '', p.career ?? '', p.semester ?? '', pkgName(s.packages, p.package_id),
         has ? p.amount_due : '', has ? paid : '', has ? Math.max(p.amount_due - paid, 0) : '', p.settled_on ? dmy(p.settled_on) : '',
         p.kit_delivered_on ? `Entregado ${dmy(p.kit_delivered_on)}` : 'Pendiente',
-        p.source === 'public' ? 'Formulario público' : 'Administración',
+        p.source === 'public' ? 'Formulario público' : p.source === 'qr' ? 'QR de asistencia' : 'Administración',
       ];
     }),
   };
@@ -68,7 +68,8 @@ export function attendanceRows(
       const e = enr.find((x) => x.person_id === id);
       const a = att.get(id);
       const enrolled = e?.status === 'enrolled';
-      const status = a ? (enrolled ? 'Asistió' : 'Sin inscripción') : e?.status === 'waitlist' ? 'Lista de espera' : 'Falta';
+      // en actividades sin registro previo no hay inscripción: toda asistencia cuenta
+      const status = a ? (enrolled || !activity.requires_registration ? 'Asistió' : 'Sin inscripción') : e?.status === 'waitlist' ? 'Lista de espera' : 'Falta';
       const via = a ? (a.method === 'qr' ? `QR · ${clockTime(a.created_at)}` : `Manual · ${a.marked_by_name || '—'}`) : '—';
       return { person, enrollment: e, attendance: a, enrolled, status: status as 'Asistió' | 'Sin inscripción' | 'Falta' | 'Lista de espera', via };
     })

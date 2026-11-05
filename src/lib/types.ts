@@ -75,6 +75,8 @@ export interface Activity {
   qr_from: string | null;
   qr_to: string | null;
   only_registered: boolean;
+  /** Si es false, el QR pide nombre y correo y registra a quien no esté en el evento. */
+  requires_registration: boolean;
   activity_packages?: { package_id: string }[];
 }
 
@@ -112,7 +114,7 @@ export interface Person {
   settled_on: string | null;
   /** Fecha de entrega del kit de bienvenida; null = pendiente. */
   kit_delivered_on: string | null;
-  source: 'admin' | 'public';
+  source: 'admin' | 'public' | 'qr';
   created_at: string;
 }
 
